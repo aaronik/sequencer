@@ -31,16 +31,20 @@ body {
   background-color: yellow;
 }
 
-.active-item {
-  background-color: #AAA !important; /* important here so when you click it and it animates that this overwrites hover */
+.grid-item.active-item {
+  background-color: #AAA !important; /* important here so it overwrites enabled and active column */
 }
 
-.active-neighbor {
+.grid-item.active-neighbor {
   background-color: #666;
 }
 
-.active-second-neighbor {
+.grid-item.active-second-neighbor {
   background-color: #222;
+}
+
+.active-column {
+  background-color: #111;
 }
 
 #play-button {
