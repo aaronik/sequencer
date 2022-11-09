@@ -26,22 +26,27 @@ body {
   background-color: #444;
 }
 
-.grid-item.enabled {
+/* Second most important */
+div.grid-item.enabled {
   background-color: yellow;
 }
 
+/* Most important */
 .grid-item.active-item {
   background-color: #AAA !important; /* important here so it overwrites enabled and active column */
 }
 
+/* Second least important */
 .grid-item.active-neighbor {
   background-color: #666;
 }
 
+/* Second least important */
 .grid-item.active-second-neighbor {
   background-color: #222;
 }
 
+/* Least important */
 .active-column {
   background-color: #111;
 }
