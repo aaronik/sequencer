@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+
+const GRID_SIZE = 16
+
+function Grid() {
+  const generateInnerGrid = () => {
+    const gridItems = []
+
+    for (let i = 0; i < GRID_SIZE; i++) {
+      for (let j = 0; j < GRID_SIZE; j++) {
+        const classNames = []
+        classNames.push('grid-item')
+        classNames.push(`row-${i} column-${j}`)
+
+        const key = `${i}-${j}`
+
+        gridItems.push(
+          <div key={key} className={classNames.join(' ')}>{}</div>
+        )
+      }
+    }
+
+    return gridItems
+  }
+
+  return (
+    <div className='grid-container'>
+      {generateInnerGrid()}
+    </div>
+  )
+}
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Grid/>
     </div>
   );
 }
 
-export default App;
+export default App
