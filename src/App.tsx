@@ -36,6 +36,7 @@ function Grid() {
       for (let j = 0; j < GRID_SIZE; j++) {
         const classNames = []
         classNames.push('grid-item')
+        classNames.push(`column-${j}`)
         classNames.push(buildItemClass(i, j))
 
         // Assign secondary neighbor classNames

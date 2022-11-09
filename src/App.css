@@ -46,7 +46,7 @@ body {
 #play-button {
   cursor: pointer;
   border: 1px solid dimgrey;
-  height: 8vh;
+  height: 6vh;
   padding: 10px;
   margin-top: 5px;
   display: flex;
@@ -64,17 +64,17 @@ body {
   position: absolute;
   width: 0;
   height: 0;
-  border-left: 8vh solid white;
-  border-top: 4vh solid transparent;
-  border-bottom: 4vh solid transparent;
+  border-left: 6vh solid #BBB;
+  border-top: 3vh solid transparent;
+  border-bottom: 3vh solid transparent;
   transition: opacity 0.3s;
 }
 
 #stop-square {
   position: absolute;
-  width: 8vh;
-  height: 8vh;
-  background-color: white;
+  width: 6vh;
+  height: 6vh;
+  background-color: #BBB;
   transition: opacity 0.3s;
 }
 
