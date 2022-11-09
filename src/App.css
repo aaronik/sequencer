@@ -16,7 +16,7 @@ body {
 .grid-item {
   margin: 2px;
   padding: 5px;
-  transition: all 0.3s;
+  transition: all 0.2s;
   cursor: pointer;
   border-radius: 2px;
   height: 30px;
@@ -26,4 +26,16 @@ body {
 
 .grid-item:hover {
   background-color: dimgrey;
+}
+
+.active-item {
+  background-color: #EEE;
+}
+
+.active-neighbor {
+  background-color: #999;
+}
+
+.active-second-neighbor {
+  background-color: #333;
 }
