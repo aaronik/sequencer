@@ -11,14 +11,15 @@ body {
   display: grid;
   grid-template-columns: repeat(16, 1fr);
   grid-template-rows: repeat(16, 1fr);
+  margin-top: 10px;
 }
 
 .grid-item {
   padding: 5px;
   transition: all 0.2s;
   cursor: pointer;
-  height: 30px;
-  width: 30px;
+  height: 3.5vh;
+  width: 3.5vh;
   border: 1px solid dimgrey;
 }
 
@@ -40,4 +41,40 @@ body {
 
 .active-second-neighbor {
   background-color: #222;
+}
+
+#play-button {
+  /* border-radius: 5px; */
+  cursor: pointer;
+  border: 1px solid dimgrey;
+  height: 8vh;
+  padding: 10px;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background-color 0.3s ease-in;
+}
+
+#play-button:hover {
+  background-color: #222;
+}
+
+#play-triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid white;
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
+}
+
+#stop-square {
+  width: 50px;
+  height: 50px;
+  background-color: white;
+
+  /* width: 0; */
+  /* height: 0; */
+  /* border-top: 50px solid white; */
+  /* border-bottom: 50px solid white; */
 }

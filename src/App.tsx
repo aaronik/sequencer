@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './App.css'
 
 const GRID_SIZE = 16
@@ -78,10 +79,28 @@ function Grid() {
   )
 }
 
+type PlayButtonProps = {
+  isPlaying: boolean
+  onClick: () => void
+}
+
+function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
+
+  return (
+    <div id='play-button' onClick={onClick}>
+      {isPlaying && <div id='play-triangle'></div>}
+      {isPlaying || <div id='stop-square'></div>}
+    </div>
+  )
+}
+
 function App() {
+  const [isPlaying, setIsPlaying] = useState(false)
+
   return (
     <div className="App">
       <Grid />
+      <PlayButton isPlaying={isPlaying} onClick={() => setIsPlaying(!isPlaying)} />
     </div>
   );
 }
