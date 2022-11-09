@@ -1,9 +1,18 @@
 import { useRef, useState } from 'react'
+import * as Tone from 'tone'
 import './App.css'
 
 const GRID_SIZE = 16
 const PROPAGATION_SPEED = 50
 const PLAYBACK_SPEED = 200 // per column
+
+const NOTES = [
+  'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6', 'D6', 'E6', 'G6', 'A6', 'C7'
+].reverse()
+
+// const NOTES = [
+//   'C3', 'D3', 'E3', 'G3', 'A3', 'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6'
+// ].reverse()
 
 const buildItemClass = (i: number, j: number) => `item-${i}-${j}`
 const buildNeighborClass = (i: number, j: number) => `neighbor-${i}-${j}`
@@ -100,7 +109,11 @@ const removeAllActiveColumns = () => {
   allItems.forEach(item => item.classList.remove('active-column'))
 }
 
-const playColumn = (column: number) => {
+const sound = (row: number, synth: Tone.PolySynth) => {
+  synth.triggerAttackRelease(NOTES[row], "8n", Tone.now())
+}
+
+const playColumn = (column: number, synth: Tone.PolySynth) => {
   removeAllActiveColumns()
 
   const playingItems = document.querySelectorAll('.' + buildColumnClass(column))
@@ -108,7 +121,7 @@ const playColumn = (column: number) => {
     item.classList.add('active-column')
     if (item.classList.contains('enabled')) {
       animate(row, column)
-      // sound(row, column)
+      sound(row, synth)
     }
   })
 }
@@ -117,11 +130,14 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const startPlay = () => {
+  const startPlay = async () => {
+    await Tone.start()
+    const synth = new Tone.PolySynth(Tone.Synth).toDestination()
+
     let column = 1
-    playColumn(0)
+    playColumn(0, synth)
     playbackInterval.current = setInterval(() => {
-      playColumn(column)
+      playColumn(column, synth)
       column = (column + 1) % (GRID_SIZE)
     }, PLAYBACK_SPEED)
   }
@@ -130,7 +146,6 @@ function App() {
     clearInterval(playbackInterval.current!)
     removeAllActiveColumns()
   }
-
 
   const togglePlay = () => {
     if (isPlaying) stopPlay()
