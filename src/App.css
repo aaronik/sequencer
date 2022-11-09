@@ -44,7 +44,6 @@ body {
 }
 
 #play-button {
-  /* border-radius: 5px; */
   cursor: pointer;
   border: 1px solid dimgrey;
   height: 8vh;
@@ -58,23 +57,27 @@ body {
 
 #play-button:hover {
   background-color: #222;
+  position: relative;
 }
 
 #play-triangle {
+  position: absolute;
   width: 0;
   height: 0;
-  border-left: 50px solid white;
-  border-top: 25px solid transparent;
-  border-bottom: 25px solid transparent;
+  border-left: 8vh solid white;
+  border-top: 4vh solid transparent;
+  border-bottom: 4vh solid transparent;
+  transition: opacity 0.3s;
 }
 
 #stop-square {
-  width: 50px;
-  height: 50px;
+  position: absolute;
+  width: 8vh;
+  height: 8vh;
   background-color: white;
+  transition: opacity 0.3s;
+}
 
-  /* width: 0; */
-  /* height: 0; */
-  /* border-top: 50px solid white; */
-  /* border-bottom: 50px solid white; */
+.hidden {
+  opacity: 0;
 }

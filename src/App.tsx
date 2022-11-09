@@ -88,8 +88,8 @@ function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
 
   return (
     <div id='play-button' onClick={onClick}>
-      {isPlaying && <div id='play-triangle'></div>}
-      {isPlaying || <div id='stop-square'></div>}
+      {<div id='play-triangle' className={isPlaying ? 'hidden' : ''}></div>}
+      {<div id='stop-square' className={isPlaying ? '' : 'hidden'}></div>}
     </div>
   )
 }
