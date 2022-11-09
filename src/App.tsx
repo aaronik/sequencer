@@ -8,6 +8,7 @@ const buildNeighborClass = (i: number, j: number) => `neighbor-${i}-${j}`
 const buildSecondNeighborClass = (i: number, j: number) => `second-neighbor-${i}-${j}`
 
 const animate = (i: number, j: number) => {
+  // TODO For some speed savings here, we could keep track of these in JS instead of reaching into the dom
   const item = document.querySelector('.' + buildItemClass(i, j))
   const itemNeighbors = document.querySelectorAll('.' + buildNeighborClass(i, j))
   const itemSecondNeighbors = document.querySelectorAll('.' + buildSecondNeighborClass(i, j))
@@ -22,7 +23,10 @@ const animate = (i: number, j: number) => {
 }
 
 function Grid() {
-  const onClick = (i: number, j: number) => () => animate(i, j)
+  const onClick = (i: number, j: number) => () => {
+    animate(i, j) // TODO move this to on play
+    document.querySelector('.' + buildItemClass(i, j))?.classList.toggle('enabled')
+  }
 
   const generateInnerGrid = () => {
     const gridItems = []

@@ -14,28 +14,30 @@ body {
 }
 
 .grid-item {
-  margin: 2px;
   padding: 5px;
   transition: all 0.2s;
   cursor: pointer;
-  border-radius: 2px;
   height: 30px;
   width: 30px;
   border: 1px solid dimgrey;
 }
 
 .grid-item:hover {
-  background-color: dimgrey;
+  background-color: #444;
+}
+
+.grid-item.enabled {
+  background-color: yellow;
 }
 
 .active-item {
-  background-color: #EEE;
+  background-color: #AAA !important; /* important here so when you click it and it animates that this overwrites hover */
 }
 
 .active-neighbor {
-  background-color: #999;
+  background-color: #666;
 }
 
 .active-second-neighbor {
-  background-color: #333;
+  background-color: #222;
 }
