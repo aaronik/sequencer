@@ -2,6 +2,13 @@ import { useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.css'
 
+// TODO
+// * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
+// In searching for making drums with tone.js, i found these limited examples:
+// - https://tonejs.github.io/docs/14.7.77/MembraneSynth.html
+// - https://gist.github.com/vibertthio/9c815b7edeee2aab3aec35de7dfa57bb
+// In short, I think the only real way to get good drums is to sample.
+
 const GRID_SIZE = 16
 const PROPAGATION_SPEED = 50
 const PLAYBACK_SPEED = 200 // per column
@@ -9,10 +16,6 @@ const PLAYBACK_SPEED = 200 // per column
 const NOTES = [
   'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6', 'D6', 'E6', 'G6', 'A6', 'C7'
 ].reverse()
-
-// const NOTES = [
-//   'C3', 'D3', 'E3', 'G3', 'A3', 'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6'
-// ].reverse()
 
 const buildItemClass = (i: number, j: number) => `item-${i}-${j}`
 const buildNeighborClass = (i: number, j: number) => `neighbor-${i}-${j}`
@@ -31,6 +34,28 @@ const animate = (i: number, j: number) => {
   setTimeout(() => item?.classList.remove('active-item'), PROPAGATION_SPEED * 3)
   setTimeout(() => itemNeighbors.forEach(neighbor => neighbor.classList.remove('active-neighbor')), PROPAGATION_SPEED * 4)
   setTimeout(() => itemSecondNeighbors.forEach(secondNeighbor => secondNeighbor.classList.remove('active-second-neighbor')), PROPAGATION_SPEED * 5)
+}
+
+const removeAllActiveColumns = () => {
+  const allItems = document.querySelectorAll('.grid-item')
+  allItems.forEach(item => item.classList.remove('active-column'))
+}
+
+const sound = (row: number, synth: Tone.PolySynth) => {
+  synth.triggerAttackRelease(NOTES[row], "8n", Tone.now())
+}
+
+const playColumn = (column: number, synth: Tone.PolySynth) => {
+  removeAllActiveColumns()
+
+  const playingItems = document.querySelectorAll('.' + buildColumnClass(column))
+  playingItems.forEach((item, row) => {
+    item.classList.add('active-column')
+    if (item.classList.contains('enabled')) {
+      animate(row, column)
+      sound(row, synth)
+    }
+  })
 }
 
 function Grid() {
@@ -95,35 +120,12 @@ type PlayButtonProps = {
 }
 
 function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
-
   return (
     <div id='play-button' onClick={onClick}>
       {<div id='play-triangle' className={isPlaying ? 'hidden' : ''}></div>}
       {<div id='stop-square' className={isPlaying ? '' : 'hidden'}></div>}
     </div>
   )
-}
-
-const removeAllActiveColumns = () => {
-  const allItems = document.querySelectorAll('.grid-item')
-  allItems.forEach(item => item.classList.remove('active-column'))
-}
-
-const sound = (row: number, synth: Tone.PolySynth) => {
-  synth.triggerAttackRelease(NOTES[row], "8n", Tone.now())
-}
-
-const playColumn = (column: number, synth: Tone.PolySynth) => {
-  removeAllActiveColumns()
-
-  const playingItems = document.querySelectorAll('.' + buildColumnClass(column))
-  playingItems.forEach((item, row) => {
-    item.classList.add('active-column')
-    if (item.classList.contains('enabled')) {
-      animate(row, column)
-      sound(row, synth)
-    }
-  })
 }
 
 function App() {
@@ -154,9 +156,10 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div>
       <Grid />
       <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+      <a id='github' target='_blank' href='https://github.com/aaronik/sequencer'><img src='github.png'/></a>
     </div>
   );
 }

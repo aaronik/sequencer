@@ -20,6 +20,7 @@ body {
   height: min(5vh, 5vw);
   width: min(5vh, 5vw);
   border: 1px solid dimgrey;
+  box-sizing: border-box;
 }
 
 .grid-item:hover {
@@ -88,4 +89,14 @@ div.grid-item.enabled {
 
 .hidden {
   opacity: 0;
+}
+
+#github {
+  position: absolute;
+  right: 2vh;
+  bottom: 2vh;
+}
+
+#github img {
+  filter: brightness(15%);
 }
