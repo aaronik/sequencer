@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.css'
 
@@ -128,6 +128,18 @@ function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
   )
 }
 
+const useEvent = (event: string, listener: (e: Event) => void, passive = false) => {
+  useEffect(() => {
+    // initiate the event handler
+    window.addEventListener(event, listener, passive)
+
+    // this will clean up the event every time the component is re-rendered
+    return function cleanup() {
+      window.removeEventListener(event, listener)
+    }
+  })
+}
+
 function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -155,11 +167,16 @@ function App() {
     setIsPlaying(!isPlaying)
   }
 
+  useEvent('keydown', (event) => {
+    const e = event as KeyboardEvent
+    if (e.key === ' ') togglePlay()
+  })
+
   return (
     <div>
       <Grid />
       <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
-      <a id='github' target='_blank' href='https://github.com/aaronik/sequencer'><img src='github.png'/></a>
+      <a id='github' target='_blank' href='https://github.com/aaronik/sequencer'><img src='github.png' /></a>
     </div>
   );
 }
