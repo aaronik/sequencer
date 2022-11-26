@@ -5,6 +5,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  overflow-y: clip;
 }
 
 .grid-container {
@@ -17,8 +18,8 @@ body {
 .grid-item {
   transition: all 0.2s;
   cursor: pointer;
-  height: min(5vh, 5vw);
-  width: min(5vh, 5vw);
+  height: min(5.5vh, 6vw);
+  width: min(5.5vh, 6vw);
   border: 1px solid black;
   background-color: #111;
   box-sizing: border-box;
@@ -53,40 +54,8 @@ div.grid-item.enabled {
   background-color: #222;
 }
 
-#play-button {
-  cursor: pointer;
-  border: 1px solid black;
-  background-color: #111;
-  height: 6vh;
-  padding: 10px;
-  margin-top: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: background-color 0.3s ease-in;
-}
-
-#play-button:hover {
-  background-color: #222;
-  position: relative;
-}
-
-#play-triangle {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 6vh solid #BBB;
-  border-top: 3vh solid transparent;
-  border-bottom: 3vh solid transparent;
-  transition: opacity 0.3s;
-}
-
-#stop-square {
-  position: absolute;
-  width: 6vh;
-  height: 6vh;
-  background-color: #BBB;
-  transition: opacity 0.3s;
+.container {
+  height: 100vh;
 }
 
 .hidden {

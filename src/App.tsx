@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.css'
+import PlayButton from './PlayButton'
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -108,22 +109,8 @@ function Grid() {
   }
 
   return (
-    <div className='grid-container'>
+    <div className="grid-container">
       {generateInnerGrid()}
-    </div>
-  )
-}
-
-type PlayButtonProps = {
-  isPlaying: boolean
-  onClick: () => void
-}
-
-function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
-  return (
-    <div id='play-button' onClick={onClick}>
-      {<div id='play-triangle' className={isPlaying ? 'hidden' : ''}></div>}
-      {<div id='stop-square' className={isPlaying ? '' : 'hidden'}></div>}
     </div>
   )
 }
@@ -173,10 +160,10 @@ function App() {
   })
 
   return (
-    <div>
+    <div className="container">
       <Grid />
       <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
-      <a id='github' target='_blank' href='https://github.com/aaronik/sequencer'><img src='github.png' /></a>
+      <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
     </div>
   );
 }
