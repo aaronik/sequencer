@@ -19,7 +19,8 @@ body {
   cursor: pointer;
   height: min(5vh, 5vw);
   width: min(5vh, 5vw);
-  border: 1px solid dimgrey;
+  border: 1px solid black;
+  background-color: #111;
   box-sizing: border-box;
 }
 
@@ -49,12 +50,13 @@ div.grid-item.enabled {
 
 /* Least important */
 .active-column {
-  background-color: #111;
+  background-color: #222;
 }
 
 #play-button {
   cursor: pointer;
-  border: 1px solid dimgrey;
+  border: 1px solid black;
+  background-color: #111;
   height: 6vh;
   padding: 10px;
   margin-top: 5px;
