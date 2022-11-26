@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
-import './App.css'
+import './App.scss'
 import PlayButton from './PlayButton'
+import { addAndReleaseClass } from './util'
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -11,35 +12,31 @@ import PlayButton from './PlayButton'
 // In short, I think the only real way to get good drums is to sample.
 
 const GRID_SIZE = 16
-const PROPAGATION_SPEED = 50
+const PROPAGATION_SPEED = 100
 const PLAYBACK_SPEED = 200 // per column
 
 const NOTES = [
   'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6', 'D6', 'E6', 'G6', 'A6', 'C7'
 ].reverse()
 
-const buildItemClass = (i: number, j: number) => `item-${i}-${j}`
-const buildNeighborClass = (i: number, j: number) => `neighbor-${i}-${j}`
+const buildItemClass           = (i: number, j: number) => `item-${i}-${j}`
+const buildNeighborClass       = (i: number, j: number) => `neighbor-${i}-${j}`
 const buildSecondNeighborClass = (i: number, j: number) => `second-neighbor-${i}-${j}`
-const buildColumnClass = (column: number) => `column-${column}`
+const buildColumnClass         = (column: number)       => `column-${column}`
+
+const container = () => document.querySelector('.grid')!
+const item = (i: number, j: number) => document.querySelector('.' + buildItemClass(i, j))!
 
 const animate = (i: number, j: number) => {
-  const item = document.querySelector('.' + buildItemClass(i, j))
-  const itemNeighbors = document.querySelectorAll('.' + buildNeighborClass(i, j))
-  const itemSecondNeighbors = document.querySelectorAll('.' + buildSecondNeighborClass(i, j))
-
-  item?.classList.add('active-item')
-  setTimeout(() => itemNeighbors.forEach(neighbor => neighbor.classList.add('active-neighbor')), PROPAGATION_SPEED)
-  setTimeout(() => itemSecondNeighbors.forEach(secondNeighbor => secondNeighbor.classList.add('active-second-neighbor')), PROPAGATION_SPEED * 2)
-
-  setTimeout(() => item?.classList.remove('active-item'), PROPAGATION_SPEED * 3)
-  setTimeout(() => itemNeighbors.forEach(neighbor => neighbor.classList.remove('active-neighbor')), PROPAGATION_SPEED * 4)
-  setTimeout(() => itemSecondNeighbors.forEach(secondNeighbor => secondNeighbor.classList.remove('active-second-neighbor')), PROPAGATION_SPEED * 5)
+  addAndReleaseClass(container(), `active-item-${i}-${j}`, 0, PROPAGATION_SPEED)
+  addAndReleaseClass(container(), `active-neighbor-${i}-${j}`, PROPAGATION_SPEED, PROPAGATION_SPEED * 2)
+  addAndReleaseClass(container(), `active-second-neighbor-${i}-${j}`, PROPAGATION_SPEED * 1.5, PROPAGATION_SPEED * 3)
 }
 
 const removeAllActiveColumns = () => {
-  const allItems = document.querySelectorAll('.grid-item')
-  allItems.forEach(item => item.classList.remove('active-column'))
+  for (let i = 0; i < GRID_SIZE; i++) {
+    container().classList.remove(`column-${i}-active`)
+  }
 }
 
 const sound = (row: number, synth: Tone.PolySynth) => {
@@ -47,11 +44,16 @@ const sound = (row: number, synth: Tone.PolySynth) => {
 }
 
 const playColumn = (column: number, synth: Tone.PolySynth) => {
-  removeAllActiveColumns()
+  // Remove the previous column that was played
+  const prevColumn = column - 1 < 0 ? GRID_SIZE - 1 : column - 1
+  container().classList.remove(`column-${prevColumn}-active`)
+
+  // Add the top level class, for which we have (lots of) lower level css rules
+  container().classList.add(`column-${column}-active`)
 
   const playingItems = document.querySelectorAll('.' + buildColumnClass(column))
+
   playingItems.forEach((item, row) => {
-    item.classList.add('active-column')
     if (item.classList.contains('enabled')) {
       animate(row, column)
       sound(row, synth)
@@ -61,7 +63,7 @@ const playColumn = (column: number, synth: Tone.PolySynth) => {
 
 function Grid() {
   const onClick = (i: number, j: number) => () => {
-    document.querySelector('.' + buildItemClass(i, j))?.classList.toggle('enabled')
+    item(i, j).classList.toggle('enabled')
   }
 
   const generateInnerGrid = () => {
@@ -109,7 +111,7 @@ function Grid() {
   }
 
   return (
-    <div className="grid-container">
+    <div className="grid">
       {generateInnerGrid()}
     </div>
   )

@@ -15,3 +15,8 @@ Simplicity - it should be obvious how to use it.
 I think there's a possibility this could be combined with another app, called music-wheel in my github, ATTOW located at
 https://www.musictheory.page/. The wheel in that app could be set to key and mode, and then the sequencer could play back
 in that key and mode.
+
+# TODO
+* Add notes here about how the classes work (assign only single class to top
+    level thing rather than to every active item, use sass to create hecka css
+    rules about it)

@@ -1,0 +1,86 @@
+$lightest-grey: #AAA;
+$light-grey: #666;
+$grey: #444;
+$dark-grey: #222;
+$darkest-grey: #111;
+
+body {
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  overflow-y: clip;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(16, 1fr);
+  margin-top: 10px;
+}
+
+.grid-item {
+  transition: all 0.2s;
+  cursor: pointer;
+  height: min(5.5vh, 6vw);
+  width: min(5.5vh, 6vw);
+  border: 1px solid black;
+  background-color: $darkest-grey;
+  box-sizing: border-box;
+}
+
+.grid-item:hover {
+  background-color: $grey;
+}
+
+// important #2
+.grid div.grid-item.enabled {
+  background-color: yellow;
+}
+
+/* rules for active column, aka the playback marker */
+@for $column from 0 through 15 {
+  .column-#{$column}-active .column-#{$column} { background-color: $dark-grey; }
+}
+
+// Animations
+@for $row from 0 through 15 {
+  @for $column from 0 through 15 {
+    // Item itself, import #1
+    .grid.active-item-#{$row}-#{$column} .item-#{$row}-#{$column} {
+      background-color: white !important;
+    }
+
+    // Neighbor, important #3
+    .grid.active-neighbor-#{$row}-#{$column} .neighbor-#{$row}-#{$column} {
+      background-color: $light-grey;
+    }
+
+
+    // Second neighbor, important #4
+    .active-second-neighbor-#{$row}-#{$column} .second-neighbor-#{$row}-#{$column} {
+      background-color: $dark-grey;
+    }
+
+  }
+}
+
+.container {
+  height: 100vh;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#github {
+  position: absolute;
+  right: 2vh;
+  bottom: 2vh;
+}
+
+#github img {
+  filter: brightness(15%);
+}
