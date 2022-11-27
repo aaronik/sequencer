@@ -51,13 +51,13 @@ const playColumn = (column: number, synth: Tone.PolySynth) => {
   // Add the top level class, for which we have (lots of) lower level css rules
   container().classList.add(`column-${column}-active`)
 
-  const playingItems = document.querySelectorAll('.' + buildColumnClass(column))
+  const playingItems = document.querySelectorAll('.enabled.' + buildColumnClass(column)) as NodeListOf<HTMLElement>
 
-  playingItems.forEach((item, row) => {
-    if (item.classList.contains('enabled')) {
-      animate(row, column)
-      sound(row, synth)
-    }
+  playingItems.forEach(item => {
+    const i = +(item.dataset.i as string)
+    const j = +(item.dataset.j as string)
+    animate(i, j)
+    sound(i, synth)
   })
 }
 
@@ -102,7 +102,7 @@ function Grid() {
         const key = `${i}-${j}`
 
         gridItems.push(
-          <div key={key} className={classNames.join(' ')} onClick={onClick(i, j)}>{}</div>
+          <div data-i={i} data-j={j} key={key} className={classNames.join(' ')} onClick={onClick(i, j)}>{}</div>
         )
       }
     }
