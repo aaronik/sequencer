@@ -51,7 +51,6 @@ body {
 }
 
 .modal {
-  display: none !important;
   position: absolute;
   width: 80vmin;
   height: 80vmin;
@@ -59,8 +58,10 @@ body {
   border: 2px double white;
   border-radius: 2vmin;
   padding: 3vmin;
+  transition: transform 0.2s;
+  transform: rotateY(90deg);
 
   &.open {
-    display: flex !important;
+    transform: rotateY(0deg);
   }
 }
