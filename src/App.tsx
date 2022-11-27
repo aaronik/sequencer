@@ -28,7 +28,7 @@ const container = () => document.querySelector('.grid')!
 const item = (i: number, j: number) => document.querySelector('.' + buildItemClass(i, j))!
 
 const animate = (i: number, j: number) => {
-  addAndReleaseClass(container(), `active-item-${i}-${j}`, 0, PROPAGATION_SPEED)
+  addAndReleaseClass(container(), `active-item-${i}-${j}`, 0, PROPAGATION_SPEED * 1.5)
   addAndReleaseClass(container(), `active-neighbor-${i}-${j}`, PROPAGATION_SPEED, PROPAGATION_SPEED * 2)
   addAndReleaseClass(container(), `active-second-neighbor-${i}-${j}`, PROPAGATION_SPEED * 1.5, PROPAGATION_SPEED * 3)
 }
