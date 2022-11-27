@@ -1,10 +1,13 @@
+import './reset.css';
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.scss'
-import { GRID_SIZE, PLAYBACK_SPEED, PROPAGATION_SPEED } from './constants'
+import { GRID_SIZE, PROPAGATION_SPEED } from './constants'
 import Grid from './Grid'
 import PlayButton from './PlayButton'
+import SettingsButton from './SettingsButton'
 import { addAndReleaseClass, buildColumnClass } from './util'
+import SettingsModal from './SettingsModal';
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -65,23 +68,51 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
   })
 }
 
+let column = 0
+let isToneInitialized = false
+
+// A note on play timing.
+// I tried:
+// * Setting a new setTimeout on each invocation of play, but this made
+// the browser stutter pretty bad. It didn't sound good.
+// * I was really stoked to try Tone.Transport, as it has bpm rampup
+// and swing, but it was all the heck over the place. setInterval was
+// drastically more smooth. It also made the browser stutter. I suspect under
+// the hood it uses setTimeout repeatedly like I tried.
 function App() {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [tempo, setTempo] = useState(150)
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  const bps = tempo / 60
+  const playInterval = 500 / bps
+
   const startPlay = async () => {
-    await Tone.start()
+    if (!isToneInitialized) {
+      await Tone.start()
+      isToneInitialized = true
+    }
+
     const synth = new Tone.PolySynth(Tone.Synth).toDestination()
 
-    let column = 1
-    playColumn(0, synth)
+    playColumn(column, synth)
     playbackInterval.current = setInterval(() => {
-      playColumn(column, synth)
       column = (column + 1) % (GRID_SIZE)
-    }, PLAYBACK_SPEED)
+      playColumn(column, synth)
+    }, playInterval)
   }
 
-  const stopPlay = () => {
+  // If the tempo changes, this is how we keep this playing and
+  // switch. It's not perfect but it's good enough.
+  useEffect(() => {
+    if (!isPlaying) { return }
+    stopPlay(false)
+    startPlay()
+  }, [tempo])
+
+  const stopPlay = (shouldResetColumn = true) => {
+    if (shouldResetColumn) column = 0
     clearInterval(playbackInterval.current!)
     removeAllActiveColumns()
   }
@@ -99,8 +130,17 @@ function App() {
 
   return (
     <div className="container">
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        close={() => setIsSettingsModalOpen(false)}
+        tempo={tempo}
+        setTempo={setTempo}
+      />
       <Grid />
-      <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+      <div id="button-row">
+        <SettingsButton onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)} />
+        <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+      </div>
       <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
     </div>
   );

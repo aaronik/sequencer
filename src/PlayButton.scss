@@ -1,19 +1,15 @@
+@import './variables.scss';
+
 #play-button {
   cursor: pointer;
   border: 1px solid black;
-  background-color: #111;
+  background-color: $darkest-grey;
   height: 6vh;
   padding: 10px;
-  margin-top: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: background-color 0.3s ease-in;
-}
-
-#play-button:hover {
-  background-color: #222;
-  position: relative;
+  flex-grow: 7; // out of 8
 }
 
 #play-triangle {

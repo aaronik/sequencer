@@ -1,3 +1,5 @@
+@import './variables.scss';
+
 body {
   background-color: black;
   color: white;
@@ -8,13 +10,17 @@ body {
   overflow-y: clip;
 }
 
-
 .container {
   height: 100vh;
 }
 
 .hidden {
   opacity: 0;
+}
+
+#button-row {
+  display: flex;
+  flex-direction: row;
 }
 
 #github {
@@ -25,4 +31,36 @@ body {
 
 #github img {
   filter: brightness(15%);
+}
+
+.button-effects {
+  cursor: pointer;
+  transition: filter 0.3s;
+
+  &:hover {
+    filter: brightness(200%);
+  }
+
+  &:active {
+    filter: brightness(250%);
+  }
+}
+
+.button-sizing {
+  font-size: 5vmin;
+}
+
+.modal {
+  display: none !important;
+  position: absolute;
+  width: 80vmin;
+  height: 80vmin;
+  background-color: $dark-grey;
+  border: 2px double white;
+  border-radius: 2vmin;
+  padding: 3vmin;
+
+  &.open {
+    display: flex !important;
+  }
 }

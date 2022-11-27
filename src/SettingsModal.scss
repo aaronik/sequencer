@@ -1,0 +1,58 @@
+@import './variables.scss';
+
+#settings-modal {
+  display: flex;
+  flex-direction: column;
+
+  & .close-button {
+    align-self: flex-end;
+    position: absolute;
+    padding: 1.5vmin 3vmin;
+    background-color: $dark-grey;
+    border-radius: 0.5vmin;
+    color: $light-grey;
+  }
+
+  & hr {
+    width: 100%;
+  }
+
+  & .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 4vmin;
+
+    & h3 { // these are meant to be the headers
+      margin: 0;
+      margin-right: 3vmin;
+    }
+  }
+
+  & .tempo-indicator {
+    border-radius: 0.5vmin;
+    border: 1px solid white;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1vmin 3vmin;
+    background-color: $dark-grey;
+    color: white;
+    width: 2rem;
+    margin-right: 3vmin;
+    height: auto;
+  }
+
+  & .tap-tempo-button {
+    background-color: $grey;
+    padding: 3vmin;
+    border-radius: 1vmin;
+    border: 1px solid white;
+    cursor: pointer;
+    user-select: none;
+
+    &:active {
+      background-color: $light-grey;
+    }
+  }
+}

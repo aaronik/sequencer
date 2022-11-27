@@ -1,4 +1,4 @@
-import './PlayButton.css'
+import './PlayButton.scss'
 
 type PlayButtonProps = {
   isPlaying: boolean
@@ -7,7 +7,7 @@ type PlayButtonProps = {
 
 export default function PlayButton({ isPlaying, onClick }: PlayButtonProps) {
   return (
-    <div id="play-button" onClick={onClick}>
+    <div id="play-button" className="button-effects" onClick={onClick}>
       {<div id="play-triangle" className={isPlaying ? "hidden" : ""}></div>}
       {<div id="stop-square" className={isPlaying ? "" : "hidden"}></div>}
     </div>

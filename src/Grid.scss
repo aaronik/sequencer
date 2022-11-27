@@ -10,11 +10,12 @@
 .grid-item {
   transition: all 0.2s;
   cursor: pointer;
-  height: min(5.5vh, 6vw);
-  width: min(5.5vh, 6vw);
+  height: 5.5vmin;
+  width: 5.5vmin;
   border: 1px solid black;
   background-color: $darkest-grey;
   box-sizing: border-box;
+  border-radius: 0.3vmin;
 }
 
 .grid-item:hover {
