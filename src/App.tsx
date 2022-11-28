@@ -156,7 +156,7 @@ function App() {
         close={() => setIsSaveModalOpen(false)}
         needsSecret={!secret}
         setSecret={(secret: string) => {
-          // setNetworkSecretLocally(secret)
+          // setNetworkSecretLocally(secret) // TODO
           setSecret(secret)
         }}
       />

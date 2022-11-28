@@ -33,6 +33,14 @@
   margin-bottom: 5rem; // make room for explanation text
   transition: opacity 0.3s; // this'll happen once after secret is input
 
+  & form {
+    display: flex;
+
+    & label {
+      display: none;
+    }
+  }
+
   & input {
     padding: 3vmin;
     text-align: center;

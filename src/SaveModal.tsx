@@ -57,17 +57,28 @@ function SecretPrompt({ setSecret, className }: { className: string, setSecret: 
   return (
     <div id="secret-prompt" className={className}>
       <div className="secret-prompt-row">
-        <input ref={inputRef} placeholder="Secret" />
-        <button
-          id="secret-prompt-submit"
-          className="button-effects"
-          type="submit"
-          onClick={onSubmit}
-        >✔</button>
+        { /* The form and label are required for the browser to remember the secret */}
+        <form name="secret-form" id="secret-form" method="GET" action="" onSubmit={e => e.preventDefault()}>
+          <label htmlFor="secret">Secret:</label>
+          <input
+            id="secret-button-input"
+            name="secret"
+            type="text"
+            autoComplete="password"
+            ref={inputRef}
+            placeholder="Add your existing secret"
+          />
+          <button
+            id="secret-prompt-submit"
+            className="button-effects"
+            type="submit"
+            onClick={onSubmit}
+          >✔</button>
+        </form>
       </div>
       <h3>-- OR --</h3>
       <button id="generate-new-secret" className="button-effects" onClick={generate}>
-        Generate New Account Secret
+        Generate secret for new account
       </button>
       <p id="explanation" className={explanationClass}>
         {text}
