@@ -1,88 +1,42 @@
 import './SaveModal.scss'
-import { generateSecret, validateSecret } from './network'
 import { useEffect, useRef, useState } from 'react'
+import { DbItem } from './types'
+import SecretPrompt from './SaveModalSecretPrompt'
 
-const SECRET_INFO_TEXT =
-  `A new secret has been generated. This is like a password -- store it in your favorite
-password manager or write it on a sticky note and tape it to your monitor. Press ✔ to continue.
-`
+function Item({ item }: { item: DbItem }) {
+  return (
+    <div key={item.id}>{JSON.stringify(item)}</div>
+  )
+}
 
-const SECRET_ERROR_TEXT = `Sorry, this secret is invalid.`
+type SaveModalBodyProps = {
+  dbItems: DbItem[]
+  ourDbItem: DbItem
+  saveItem: (item: DbItem) => void
+}
 
-function SecretPrompt({ setSecret, className }: { className: string, setSecret: SaveModalProps['setSecret'] }) {
-  const [text, setText] = useState("")
-  const [showText, setShowText] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+function SaveModalBody({ dbItems, saveItem, ourDbItem }: SaveModalBodyProps) {
+  const nameRef = useRef<HTMLInputElement>(null)
 
-  const scheduleTextFade = (seconds: number) => {
-    setTimeout(() => {
-      setShowText(false)
-      setTimeout(() => {
-        setText("")
-      }, 300)
-    }, seconds * 1000)
+  const saveName = () => {
+    const newName = nameRef.current?.value
+    if (!newName) { return }
+    ourDbItem.name = nameRef.current?.value
+    saveItem(ourDbItem)
   }
-
-  const generate = () => {
-    const secret = generateSecret()
-    inputRef.current!.value = secret
-    setText(SECRET_INFO_TEXT)
-    setIsError(false)
-    setShowText(true)
-    scheduleTextFade(30)
-  }
-
-  const onSubmit = () => {
-    const secret = inputRef.current!.value
-    if (!secret) return
-
-    try {
-      validateSecret(secret)
-    } catch (e) {
-      setText(SECRET_ERROR_TEXT)
-      setIsError(true)
-      setShowText(true)
-      scheduleTextFade(5)
-      return
-    }
-
-    setSecret(secret)
-  }
-
-  let explanationClass = ""
-  if (isError) explanationClass += " error"
-  if (!showText) explanationClass += " hidden"
 
   return (
-    <div id="secret-prompt" className={className}>
-      <div className="secret-prompt-row">
-        { /* The form and label are required for the browser to remember the secret */}
-        <form name="secret-form" id="secret-form" method="GET" action="" onSubmit={e => e.preventDefault()}>
-          <label htmlFor="secret">Secret:</label>
-          <input
-            id="secret-button-input"
-            name="secret"
-            type="text"
-            autoComplete="password"
-            ref={inputRef}
-            placeholder="Add your existing secret"
-          />
-          <button
-            id="secret-prompt-submit"
-            className="button-effects"
-            type="submit"
-            onClick={onSubmit}
-          >✔</button>
-        </form>
+    <div id="save-modal-body">
+      <h3>Saving under:</h3>
+      <div className="input-group" onKeyDown={e => e.stopPropagation()}>
+        <input
+          placeholder="Your name"
+          defaultValue={ourDbItem.name}
+          ref={nameRef}
+        />
+        <button className="button-effects" onClick={saveName}>Update</button>
       </div>
-      <h3>-- OR --</h3>
-      <button id="generate-new-secret" className="button-effects" onClick={generate}>
-        Generate secret for new account
-      </button>
-      <p id="explanation" className={explanationClass}>
-        {text}
-      </p>
+      <hr />
     </div>
   )
 }
@@ -92,31 +46,41 @@ type SaveModalProps = {
   close: () => void
   setSecret: (secret: string) => void
   needsSecret: boolean
+  numConnections: number
+  dbItems: DbItem[]
+  ourDbItem: DbItem
+  saveItem: (item: DbItem) => void
 }
 
-export default function SaveModal({ isOpen, close, setSecret, needsSecret }: SaveModalProps) {
-  const [isSecretPromptHidden, setIsSecretPromptHidden] = useState(!needsSecret)
-  const [isSecretPromptDisplayed, setIsSecretPromptDisplayed] = useState(needsSecret)
+export default function SaveModal(props: SaveModalProps) {
+  const [isSecretPromptHidden, setIsSecretPromptHidden] = useState(!props.needsSecret)
+  const [isSecretPromptDisplayed, setIsSecretPromptDisplayed] = useState(props.needsSecret)
 
   // One time, when the secret is input by the user, we'll do this to fade the whole prompt out
   useEffect(() => {
-    if (!needsSecret) {
+    if (!props.needsSecret) {
       setIsSecretPromptHidden(true)
       setTimeout(() => {
         setIsSecretPromptDisplayed(false)
       }, 300)
     }
-  }, [needsSecret])
+  }, [props.needsSecret])
 
   return (
-    <div id="save-modal" className={"modal" + (isOpen ? " open" : "")} onClick={e => e.stopPropagation()}>
-      <div onClick={close} className="close-button button-effects button-sizing">⊗</div>
+    <div id="save-modal" className={"modal" + (props.isOpen ? " open" : "")} onClick={e => e.stopPropagation()}>
+      <span id="connections-readout">{props.numConnections}</span>
+      <div onClick={props.close} className="close-button button-effects button-sizing">⊗</div>
       <h2 style={{ alignSelf: 'center' }}>Save / Load</h2>
       <hr />
 
       {
         isSecretPromptDisplayed &&
-        <SecretPrompt className={isSecretPromptHidden ? "hidden" : ""} setSecret={setSecret} />
+        <SecretPrompt className={isSecretPromptHidden ? "hidden" : ""} setSecret={props.setSecret} />
+      }
+
+      {
+        isSecretPromptDisplayed ||
+        <SaveModalBody dbItems={props.dbItems} ourDbItem={props.ourDbItem} saveItem={props.saveItem} />
       }
     </div>
   )

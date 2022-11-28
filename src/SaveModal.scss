@@ -5,6 +5,17 @@
   flex-direction: column;
   min-height: 21rem; // This is so the save secret blurb is always inside the box. text :sigh
 
+  & #connections-readout {
+    align-self: flex-start;
+    position: absolute;
+    margin: 3.5vmin 0;
+    padding: 0rem 0.3rem;
+    background-color: $dark-grey;
+    border-radius: 100%;
+    color: $light-grey;
+    border: 1px solid $light-grey;
+  }
+
   & .close-button {
     align-self: flex-end;
     position: absolute;
@@ -20,70 +31,38 @@
 
 }
 
-#secret-prompt {
-  align-self: center;
-  margin-top: 5vmin;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  height: 100%;
-  margin-bottom: 5rem; // make room for explanation text
-  transition: opacity 0.3s; // this'll happen once after secret is input
-
-  & form {
+#save-modal-body {
+  // General for an input and a submit button
+  & .input-group {
     display: flex;
 
-    & label {
-      display: none;
+    input {
+      padding: 3vmin;
+      text-align: center;
+      border-top-left-radius: 2vmin;
+      border-bottom-left-radius: 2vmin;
+      flex-grow: 5;
+      border: none;
+      width: 80%;
+
+      &:focus-visible {
+        outline: none;
+      }
     }
-  }
 
-  & input {
-    padding: 3vmin;
-    text-align: center;
-    border-top-left-radius: 2vmin;
-    border-bottom-left-radius: 2vmin;
-    width: 80%;
-    border: none;
-
-    &:focus-visible {
-      outline: none;
-    }
-  }
-
-  & .secret-prompt-row {
-    display: flex;
-    flex-direction: row;
-  }
-  & button#secret-prompt-submit {
-    padding: 3vmin;
-    border-top-right-radius: 2vmin;
-    border-bottom-right-radius: 2vmin;
-    border: none;
-    height: 100%;
-    width: 10vmin;
-    cursor: pointer;
-    background: $light-grey;
-  }
-
-  & button#generate-new-secret {
-    background: $light-grey;
-    border: none;
-    padding: 3vmin;
-    border-radius: 2vmin;
-  }
-
-  & p#explanation {
-    transition: opacity 0.3s;
-    position: absolute;
-    bottom: 1rem;
-    width: 80%;
-
-    &.error {
-      color: red;
+    button {
+      padding: 3vmin;
+      flex-grow: 1;
+      border-top-right-radius: 2vmin;
+      border-bottom-right-radius: 2vmin;
+      border: none;
+      height: 100%;
+      width: 10vmin;
+      cursor: pointer;
+      background: $light-grey;
+      color: white;
+      min-width: max-content;
     }
   }
 }
+

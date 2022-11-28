@@ -1,4 +1,4 @@
-import './reset.css';
+import './reset.css'
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.scss'
@@ -7,9 +7,13 @@ import Grid from './Grid'
 import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
 import { addAndReleaseClass, buildColumnClass } from './util'
-import SettingsModal from './SettingsModal';
-import SaveButton from './SaveButton';
-import SaveModal from './SaveModal';
+import SettingsModal from './SettingsModal'
+import SaveButton from './SaveButton'
+import SaveModal from './SaveModal'
+import type Network from '@browser-network/network'
+import type Db from '@browser-network/database'
+import { buildNetworkAndDb } from './network'
+import { DbItem } from './types'
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -69,8 +73,17 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
 let column = 0
 let isToneInitialized = false
 
+let network: Network
+let db: Db<DbItem>
+
 const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-network-secret') || ''
 const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
+
+const DEFAULT_DB_ITEM = {
+  id: window.crypto.randomUUID(),
+  name: "",
+  saves: []
+}
 
 // A note on play timing.
 // I tried:
@@ -87,6 +100,9 @@ function App() {
   const [tempo, setTempo] = useState(150)
   const [tuning, setTuning] = useState<keyof typeof TUNINGS>('maj5')
   const [secret, setSecret] = useState(getLocallyStoredNetworkSecret())
+  const [numConnections, setNumConnections] = useState(0)
+  const [dbItems, setDbItems] = useState<DbItem[]>([])
+  const [ourDbItem, setOurDbItem] = useState<DbItem>()
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const bps = tempo / 60
@@ -114,6 +130,31 @@ function App() {
     stopPlay(false)
     startPlay()
   }, [tempo, tuning])
+
+  const updateConnections = () => setNumConnections(network.activeConnections.length)
+  const updateDbItems = () => {
+    setDbItems(db.getAll().map(i => i.state))
+    setOurDbItem(db.get(db.publicKey)?.state)
+  }
+
+  useEffect(() => {
+    if (!secret) return
+
+    [network, db] = buildNetworkAndDb(secret)
+
+    const dbItem = db.get(db.publicKey)?.state
+    if (dbItem) { setOurDbItem(dbItem) }
+
+    network?.on('add-connection', updateConnections)
+    network?.on('destroy-connection', updateConnections)
+    db?.onChange(updateDbItems)
+
+    return () => {
+      network?.removeListener('add-connection', updateConnections)
+      network?.removeListener('destroy-connection', updateConnections)
+      db?.removeChangeHandlers()
+    }
+  }, [secret])
 
   const stopPlay = (shouldResetColumn = true) => {
     if (shouldResetColumn) column = 0
@@ -156,8 +197,15 @@ function App() {
         close={() => setIsSaveModalOpen(false)}
         needsSecret={!secret}
         setSecret={(secret: string) => {
-          // setNetworkSecretLocally(secret) // TODO
+          setNetworkSecretLocally(secret)
           setSecret(secret)
+        }}
+        numConnections={numConnections}
+        ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
+        dbItems={dbItems}
+        saveItem={(item: DbItem) => {
+          console.log('saving item:', item)
+          db.set(item)
         }}
       />
       <Grid activeColor={TUNINGS[tuning].color} />

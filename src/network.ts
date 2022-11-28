@@ -1,8 +1,8 @@
 import type Network from '@browser-network/network'
+import type Db from '@browser-network/database'
 import type { generateSecret as GenerateSecret } from '@browser-network/crypto'
 import type { derivePubKey as DerivePubKey } from '@browser-network/crypto'
-import type Db from '@browser-network/database'
-// import { AsteroidsMessage, MultiPlayerGameData } from './types'
+import { DbItem } from './types'
 
 const Net = require('@browser-network/network/umd/network').default as typeof Network
 const { generateSecret: genSec } = require('@browser-network/crypto/umd/crypto') as { generateSecret: typeof GenerateSecret }
@@ -14,18 +14,24 @@ export const validateSecret = (secret: string) => {
   derivPub(secret) // This will throw if wrong
 }
 
-export const buildNetworkAndDb = (secret: string): [Network, Db<{}>] => {
+export const buildNetworkAndDb = (secret: string): [Network, Db<DbItem>] => {
   const network = new Net({
     secret: secret,
     networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3',
     switchAddress: 'https://switchboard.aaronik.com'
   })
 
-  const db = new Database<{}>({
+  // @ts-ignore
+  window.network = network
+
+  const db = new Database<DbItem>({
     network: network,
     secret: secret,
     appId: 'sequencer-db'
   })
+
+  // @ts-ignore
+  window.db = db
 
   return [network, db]
 }
