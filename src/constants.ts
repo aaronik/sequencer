@@ -30,6 +30,20 @@ export const TUNINGS = {
       'C4', 'Db4', 'F4', 'G4', 'Ab4', 'C5', 'Db5', 'F5', 'G5', 'Ab5', 'C6', 'Db6', 'F6', 'G6', 'Ab6', 'C7'
     ].reverse()
   },
+  wholetone: {
+    name: 'Whole Tone',
+    color: 'purple',
+    notes: [
+      'C4', 'D4', 'E4', 'Gb4', 'Ab4', 'Bb4', 'C5', 'D5', 'E5', 'Gb5', 'Ab5', 'Bb5', 'C6', 'D6', 'E6', 'Gb6'
+    ].reverse()
+  },
+  // phrygdom: {
+  //   name: 'Phrygian Dominant',
+  //   color: 'darkorange',
+  //   notes: [
+  //     'C4', 'Db4', 'E4', 'F4', 'G4', 'Ab4', 'Bb4', 'C5', 'Db5', 'E5', 'F5', 'G5', 'Ab5', 'Bb5', 'C6', 'Db6'
+  //   ].reverse()
+  // },
   // dorian: {
   //   name: 'Dorian',
   //   color: 'teal',
