@@ -98,7 +98,7 @@ export default function SaveModal({ isOpen, close, setSecret, needsSecret }: Sav
   }, [needsSecret])
 
   return (
-    <div id="save-modal" className={"modal" + (isOpen ? " open" : "")}>
+    <div id="save-modal" className={"modal" + (isOpen ? " open" : "")} onClick={e => e.stopPropagation()}>
       <div onClick={close} className="close-button button-effects button-sizing">⊗</div>
       <h2 style={{ alignSelf: 'center' }}>Save / Load</h2>
       <hr />

@@ -136,6 +136,11 @@ function App() {
     }
   })
 
+  useEvent('click', () => {
+    setIsSettingsModalOpen(false)
+    setIsSaveModalOpen(false)
+  })
+
   return (
     <div className="container">
       <SettingsModal
@@ -156,7 +161,7 @@ function App() {
         }}
       />
       <Grid activeColor={TUNINGS[tuning].color} />
-      <div id="button-row">
+      <div id="button-row" onClick={e => e.stopPropagation()}>
         <SettingsButton onClick={() => {
           setIsSettingsModalOpen(!isSettingsModalOpen)
           setIsSaveModalOpen(false)

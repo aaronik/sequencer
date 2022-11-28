@@ -20,7 +20,7 @@ export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: 
   }
 
   return (
-    <div id="settings-modal" className={"modal" + (isOpen ? " open" : "")}>
+    <div id="settings-modal" className={"modal" + (isOpen ? " open" : "")} onClick={e => e.stopPropagation()}>
       <div onClick={close} className="close-button button-effects button-sizing">⊗</div>
       <h2 style={{ alignSelf: 'center' }}>Settings</h2>
       <hr />
