@@ -76,4 +76,18 @@
       border: 1px solid white;
     }
   }
+
+  & .tempo-update-check {
+    color: green;
+    font-size: 4vmin;
+    border: 1px solid green;
+    border-radius: 100%;
+    width: 4vmin;
+    height: 4vmin;
+    margin-left: 3vmin;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
 }

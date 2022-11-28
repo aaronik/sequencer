@@ -10,13 +10,14 @@ let tapTimes: number[] = []
 // Styles for here are in SettingsModal.scss
 export default function SettingsModalTempoRow({ tempo, setTempo }: SettingsModalTempoRowProps) {
   const [tempoDisplay, setTempoDisplay] = useState<string>(tempo.toString())
+  const [isCheckShowing, setIsCheckShowing] = useState(false)
 
   // This is a bit complicated - Here's what's going on:
   // When the box is clicked on, it's emptied to make ready for typing.
   // When numbers are added, they're tacked onto the end.
   // When the box loses focus or enter is pressed, it sets the tempo.
   // This all because with a managed component it's hard to input stuff.
-  const onTempoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onTempoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // @ts-ignore -- I don't know why it thinks this isn't in there
     const data: string | null = e.nativeEvent.data
     if (data === null) { return }
@@ -64,18 +65,34 @@ export default function SettingsModalTempoRow({ tempo, setTempo }: SettingsModal
     setTempo(bps)
   }
 
+  // Sometimes with the input it's hard to know something happened,
+  // so this check shows it's been changed
+  const showCheck = () => {
+    setIsCheckShowing(true)
+    setTimeout(() => {
+      setIsCheckShowing(false)
+    }, 3000)
+  }
+
+  // When we're ready to set the tempo
+  const onReadySetTempo = () => {
+    setTempo(+tempoDisplay)
+    showCheck()
+  }
+
   return (
     <div className="row">
       <h3>Tempo</h3>
       <input
         onClick={() => setTempoDisplay("")}
-        onChange={onTempoChange}
+        onChange={onTempoInputChange}
         className="tempo-indicator"
         value={tempoDisplay}
-        onBlur={() => setTempo(+tempoDisplay)}
-        onKeyDown={(e) => { if (e.key === 'Enter') setTempo(+tempoDisplay) }}
+        onBlur={onReadySetTempo}
+        onKeyDown={(e) => { if (e.key === 'Enter') onReadySetTempo() }}
       />
       <span onClick={onTap} className="tap-tempo-button">Tap</span>
+      <span className={"tempo-update-check" + (isCheckShowing ? "" : " hidden")}>✔</span>
     </div>
   )
 }
