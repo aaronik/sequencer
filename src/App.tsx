@@ -8,6 +8,8 @@ import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
 import { addAndReleaseClass, buildColumnClass } from './util'
 import SettingsModal from './SettingsModal';
+import SaveButton from './SaveButton';
+import SaveModal from './SaveModal';
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -67,6 +69,9 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
 let column = 0
 let isToneInitialized = false
 
+const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-network-secret') || ''
+const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
+
 // A note on play timing.
 // I tried:
 // * Setting a new setTimeout on each invocation of play, but this made
@@ -78,8 +83,10 @@ let isToneInitialized = false
 function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(true)
   const [tempo, setTempo] = useState(150)
   const [tuning, setTuning] = useState<keyof typeof TUNINGS>('maj5')
+  const [secret, setSecret] = useState(getLocallyStoredNetworkSecret())
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const bps = tempo / 60
@@ -125,6 +132,7 @@ function App() {
     if (e.key === ' ') togglePlay()
     if (e.key === 'Escape') {
       setIsSettingsModalOpen(false)
+      setIsSaveModalOpen(false)
     }
   })
 
@@ -138,10 +146,26 @@ function App() {
         tuning={tuning}
         setTuning={setTuning}
       />
-      <Grid activeColor={TUNINGS[tuning].color}/>
+      <SaveModal
+        isOpen={isSaveModalOpen}
+        close={() => setIsSaveModalOpen(false)}
+        needsSecret={!secret}
+        setSecret={(secret: string) => {
+          // setNetworkSecretLocally(secret)
+          setSecret(secret)
+        }}
+      />
+      <Grid activeColor={TUNINGS[tuning].color} />
       <div id="button-row">
-        <SettingsButton onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)} />
+        <SettingsButton onClick={() => {
+          setIsSettingsModalOpen(!isSettingsModalOpen)
+          setIsSaveModalOpen(false)
+        }} />
         <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+        <SaveButton onClick={() => {
+          setIsSaveModalOpen(!isSaveModalOpen)
+          setIsSettingsModalOpen(false)
+        }} />
       </div>
       <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
     </div>

@@ -20,7 +20,7 @@ export default function Grid({ activeColor }: GridProps) {
         classNames.push('grid-item')
         classNames.push(buildColumnClass(j))
         classNames.push(buildItemClass(i, j))
-        // if (i + j === GRID_SIZE - 1) classNames.push('enabled')
+        if (i + j === GRID_SIZE - 1) classNames.push('enabled')
 
         // Assign secondary neighbor classNames
         for (let m = i - 2; m <= i + 2; m++) {

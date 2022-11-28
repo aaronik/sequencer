@@ -60,6 +60,7 @@ body {
   padding: 3vmin;
   transition: transform 0.2s;
   transform: rotateY(90deg);
+  z-index: 100;
 
   &.open {
     transform: rotateY(0deg);
