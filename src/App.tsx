@@ -2,7 +2,7 @@ import './reset.css';
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.scss'
-import { GRID_SIZE, PROPAGATION_SPEED } from './constants'
+import { GRID_SIZE, PROPAGATION_SPEED, TUNINGS } from './constants'
 import Grid from './Grid'
 import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
@@ -15,10 +15,6 @@ import SettingsModal from './SettingsModal';
 // - https://tonejs.github.io/docs/14.7.77/MembraneSynth.html
 // - https://gist.github.com/vibertthio/9c815b7edeee2aab3aec35de7dfa57bb
 // In short, I think the only real way to get good drums is to sample.
-
-const NOTES = [
-  'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6', 'D6', 'E6', 'G6', 'A6', 'C7'
-].reverse()
 
 const container = () => document.querySelector('.grid')!
 
@@ -34,11 +30,11 @@ const removeAllActiveColumns = () => {
   }
 }
 
-const sound = (row: number, synth: Tone.PolySynth) => {
-  synth.triggerAttackRelease(NOTES[row], "8n", Tone.now())
+const sound = (row: number, synth: Tone.PolySynth, notes: string[]) => {
+  synth.triggerAttackRelease(notes[row], "8n", Tone.now())
 }
 
-const playColumn = (column: number, synth: Tone.PolySynth) => {
+const playColumn = (column: number, synth: Tone.PolySynth, tuning: keyof typeof TUNINGS) => {
   // Remove the previous column that was played
   const prevColumn = column - 1 < 0 ? GRID_SIZE - 1 : column - 1
   container().classList.remove(`column-${prevColumn}-active`)
@@ -52,7 +48,7 @@ const playColumn = (column: number, synth: Tone.PolySynth) => {
     const i = +(item.dataset.i as string)
     const j = +(item.dataset.j as string)
     animate(i, j)
-    sound(i, synth)
+    sound(i, synth, TUNINGS[tuning].notes)
   })
 }
 
@@ -83,6 +79,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [tempo, setTempo] = useState(150)
+  const [tuning, setTuning] = useState<keyof typeof TUNINGS>('maj5')
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const bps = tempo / 60
@@ -96,10 +93,10 @@ function App() {
 
     const synth = new Tone.PolySynth(Tone.Synth).toDestination()
 
-    playColumn(column, synth)
+    playColumn(column, synth, tuning)
     playbackInterval.current = setInterval(() => {
       column = (column + 1) % (GRID_SIZE)
-      playColumn(column, synth)
+      playColumn(column, synth, tuning)
     }, playInterval)
   }
 
@@ -109,7 +106,7 @@ function App() {
     if (!isPlaying) { return }
     stopPlay(false)
     startPlay()
-  }, [tempo])
+  }, [tempo, tuning])
 
   const stopPlay = (shouldResetColumn = true) => {
     if (shouldResetColumn) column = 0
@@ -135,8 +132,10 @@ function App() {
         close={() => setIsSettingsModalOpen(false)}
         tempo={tempo}
         setTempo={setTempo}
+        tuning={tuning}
+        setTuning={setTuning}
       />
-      <Grid />
+      <Grid activeColor={TUNINGS[tuning].color}/>
       <div id="button-row">
         <SettingsButton onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)} />
         <PlayButton isPlaying={isPlaying} onClick={togglePlay} />

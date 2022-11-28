@@ -23,9 +23,10 @@
 }
 
 // important #2
-.grid div.grid-item.enabled {
-  background-color: yellow;
-}
+// Lives in Grid.tsx
+// .grid div.grid-item.enabled {
+//   background-color: yellow;
+// }
 
 /* rules for active column, aka the playback marker */
 @for $column from 0 through 15 {

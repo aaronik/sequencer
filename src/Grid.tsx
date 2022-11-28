@@ -2,7 +2,11 @@ import './Grid.scss'
 import { GRID_SIZE } from "./constants"
 import { buildColumnClass, buildItemClass, buildNeighborClass, buildSecondNeighborClass, item } from "./util"
 
-export default function Grid() {
+type GridProps = {
+  activeColor: string
+}
+
+export default function Grid({ activeColor }: GridProps) {
   const onClick = (i: number, j: number) => () => {
     item(i, j).classList.toggle('enabled')
   }
@@ -16,6 +20,7 @@ export default function Grid() {
         classNames.push('grid-item')
         classNames.push(buildColumnClass(j))
         classNames.push(buildItemClass(i, j))
+        // if (i + j === GRID_SIZE - 1) classNames.push('enabled')
 
         // Assign secondary neighbor classNames
         for (let m = i - 2; m <= i + 2; m++) {
@@ -53,6 +58,9 @@ export default function Grid() {
 
   return (
     <div className="grid">
+      <style>
+        {`.grid div.grid-item.enabled { background-color: ${activeColor};`}
+      </style>
       {generateInnerGrid()}
     </div>
   )
