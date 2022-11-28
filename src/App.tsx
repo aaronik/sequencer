@@ -100,7 +100,7 @@ function App() {
     }, playInterval)
   }
 
-  // If the tempo changes, this is how we keep this playing and
+  // If the tempo or tuning changes, this is how we keep this playing and
   // switch. It's not perfect but it's good enough.
   useEffect(() => {
     if (!isPlaying) { return }
@@ -123,6 +123,9 @@ function App() {
   useEvent('keydown', (event) => {
     const e = event as KeyboardEvent
     if (e.key === ' ') togglePlay()
+    if (e.key === 'Escape') {
+      setIsSettingsModalOpen(false)
+    }
   })
 
   return (
