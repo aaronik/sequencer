@@ -30,6 +30,13 @@ export const TUNINGS = {
       'C4', 'Db4', 'F4', 'G4', 'Ab4', 'C5', 'Db5', 'F5', 'G5', 'Ab5', 'C6', 'Db6', 'F6', 'G6', 'Ab6', 'C7'
     ].reverse()
   },
+  thac: {
+    name: 'Thacritonic',
+    color: 'cornflowerblue',
+    notes: [
+      'C4', 'Db4', 'E4', 'F4', 'A4', 'C5', 'Db5', 'E5', 'F5', 'A5', 'C6', 'Db6', 'E6', 'F6', 'A6', 'C7'
+    ].reverse()
+  },
   wholetone: {
     name: 'Whole Tone',
     color: 'purple',
