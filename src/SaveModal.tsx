@@ -11,7 +11,7 @@ function MiniGrid({ save }: { save: DbItem['saves'][number] }) {
 
   const squareMatrix: string[][] = []
   // const whiteSquare = '&#9633;'
-  const whiteSquare = '□'
+  const whiteSquare = '◻'
   // const blackSquare = '&#9632;'
   const blackSquare = '◼'
 
@@ -80,10 +80,9 @@ type SaveModalBodyProps = {
 }
 
 // TODO
-// * Nice visual indicator for when the name is updated (checkbox next to header?)
 // * Don't allow twice saving of the same grid
-// * Require tune name
-// * Delete your own tunes
+// * Save/load height on mobile :(
+// * Settings scroll only inside
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
   const tuneNameRef = useRef<HTMLInputElement>(null)
   const [personName, setPersonName] = useState("")

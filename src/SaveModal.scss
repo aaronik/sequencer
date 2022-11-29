@@ -118,7 +118,8 @@
 
   .mini-grid {
     font-size: 0.6rem;
-    line-height: 0.38rem;
+    // line-height: 0.375rem;
+    line-height: 0.625em; // Both this and above work but I think it's more correct to do em
     user-select: none;
     margin: 0;
     margin-right: 1vmin;
