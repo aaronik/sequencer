@@ -20,7 +20,8 @@ export default function Grid({ activeColor }: GridProps) {
         classNames.push('grid-item')
         classNames.push(buildColumnClass(j))
         classNames.push(buildItemClass(i, j))
-        if (i + j === GRID_SIZE - 1) classNames.push('enabled')
+        // // This is for development. Uncomment this to get an upward trending file from left to right
+        // if (i + j === GRID_SIZE - 1) classNames.push('enabled')
 
         // Assign secondary neighbor classNames
         for (let m = i - 2; m <= i + 2; m++) {

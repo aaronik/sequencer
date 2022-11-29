@@ -123,7 +123,7 @@ const validateDbItem = (dbItem: DbItem): boolean => {
 function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(true)
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [tempo, setTempo] = useState(150)
   const [tuning, setTuning] = useState<keyof typeof TUNINGS>('maj5')
   const [secret, setSecret] = useState(getLocallyStoredNetworkSecret())
@@ -162,7 +162,6 @@ function App() {
     net.network!.removeListener('destroy-connection', updateConnections)
     net.db!.removeChangeHandlers()
     net.network!.teardown()
-    net.db!.removeChangeHandlers()
     delete net.network
     delete net.db
   }

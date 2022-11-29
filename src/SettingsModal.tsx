@@ -1,6 +1,7 @@
 import { TUNINGS } from './constants'
 import './SettingsModal.scss'
 import SettingsModalTempoRow from './SettingsModalTempoRow'
+import { disableAllGridItems } from './util'
 
 type SettingsModalProps = {
   isOpen: boolean
@@ -52,6 +53,13 @@ export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: 
             })
           }
         </div>
+      </div>
+
+      <div className="row">
+        <h3>Clear</h3>
+        <button id="clear-grid-button" className="button-effects" onClick={disableAllGridItems}>
+          Clear the grid
+        </button>
       </div>
     </div>
   )

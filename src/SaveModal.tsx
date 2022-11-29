@@ -80,6 +80,7 @@ type SaveModalBodyProps = {
 // * Require tune name
 // * Delete your own tunes
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
+  const tuneNameRef = useRef<HTMLInputElement>(null)
   const [personName, setPersonName] = useState("")
   const [tuneName, setTuneName] = useState("")
   const [isNameSaveIndicatorShowing, setIsNameSaveIndicatorShowing] = useState(false)
@@ -102,6 +103,7 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
     serialized.name = tuneName
     ourDbItem.saves.push(serialized)
     saveItem(ourDbItem)
+    tuneNameRef.current!.value = ""
     setTuneName("")
 
     setIsTuneSaveIndicatorShowing(true)
@@ -135,9 +137,10 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
         <input
           placeholder="Name this tune"
           maxLength={15}
+          ref={tuneNameRef}
           onChange={e => setTuneName(e.currentTarget.value)}
         />
-        <button className="button-effects" disabled={!tuneName} onClick={serializeAndSaveItem}>Save</button>
+        <button style={{ width: '6rem' }}className="button-effects" disabled={!tuneName} onClick={serializeAndSaveItem}>Save</button>
       </div>
 
       <hr />
