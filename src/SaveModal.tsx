@@ -81,9 +81,6 @@ type SaveModalBodyProps = {
 
 // TODO
 // * Don't allow twice saving of the same grid
-// * Save/load height on mobile :(
-// * Settings scroll only inside
-// * Add explanation for "Generate secret for new account", that it's free and instant
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
   const tuneNameRef = useRef<HTMLInputElement>(null)
   const [personName, setPersonName] = useState("")
