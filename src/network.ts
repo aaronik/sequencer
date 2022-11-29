@@ -17,15 +17,13 @@ export const validateSecret = (secret: string) => {
 export const buildNetworkAndDb = (secret: string): [Network, Db<DbItem>] => {
   const network = new Net({
     secret: secret,
-    networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3',
+    networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3' + window.location.href,
     switchAddress: 'https://switchboard.aaronik.com',
     // switchAddress: 'http://localhost:5678',
     config: {
       fastSwitchboardRequestInterval: 2000
     }
   })
-
-  network.on('connection-process', console.log)
 
   // @ts-ignore
   window.network = network

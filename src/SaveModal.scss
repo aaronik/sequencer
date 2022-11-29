@@ -107,6 +107,13 @@
       width: 7em; // both this and above are necessary for word-break and size
       word-break: break-all;
     }
+
+    & .delete-button {
+      background: $dark-grey;
+      border: none;
+      color: $light-grey;
+      border-radius: 0.1em;
+    }
   }
 
   .mini-grid {

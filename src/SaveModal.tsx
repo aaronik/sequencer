@@ -47,18 +47,23 @@ function MiniGrid({ save }: { save: DbItem['saves'][number] }) {
 type ItemProps = {
   item: DbItem,
   loadSave: (save: DbItem['saves'][number]) => void
+  deleteSave?: (saveId: string) => void
 }
 
-
-function Item({ item, loadSave }: ItemProps) {
+function Item({ item, loadSave, deleteSave }: ItemProps) {
   return (
     <div className="db-item">
       <h6 className="user-name">{item.name}</h6>
       {item.saves.map(save => {
         return (
-          <div style={{ textAlign: 'center', cursor: 'pointer' }} key={save.id} onClick={() => loadSave(save)}>
-            <h6>{save.name}</h6>
-            <MiniGrid save={save} />
+          <div key={save.id}>
+            <div style={{ justifyContent: 'space-around' }} className="row">
+              <h6>{save.name}</h6>
+              { !!deleteSave && <button className="delete-button button-effects" onClick={() => deleteSave(save.id)}>⊗</button>}
+            </div>
+            <div style={{ cursor: 'pointer' }} onClick={() => loadSave(save)}>
+              <MiniGrid save={save} />
+            </div>
           </div>
         )
       })}
@@ -100,6 +105,7 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
   const serializeAndSaveItem = () => {
     if (!ourDbItem) return // TODO on these returns make a red check
     const serialized = getSerializedCurrentState()
+    console.log('saving, serialized id', serialized.id)
     serialized.name = tuneName
     ourDbItem.saves.push(serialized)
     saveItem(ourDbItem)
@@ -111,6 +117,17 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
       setIsTuneSaveIndicatorShowing(false)
     }, 3000)
   }
+
+  const deleteSave = (saveId: string) => {
+    if (!ourDbItem) return
+    ourDbItem.saves = ourDbItem.saves.filter(save => save.id !== saveId)
+    saveItem(ourDbItem)
+  }
+
+  // Make sure ours is always on top
+  const ourIndex = dbItems.findIndex(item => item.id === ourDbItem.id)
+  dbItems.splice(ourIndex, 1)
+  dbItems.unshift(ourDbItem)
 
   return (
     <div id="save-modal-body" onKeyDown={e => e.stopPropagation()}>
@@ -148,7 +165,7 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
       <h4>Load:</h4>
 
       <div id="load-section">
-        {dbItems.map(item => <Item key={item.id} item={item} loadSave={loadSave} />)}
+        {dbItems.map(item => <Item key={item.id} item={item} loadSave={loadSave} deleteSave={item.id === ourDbItem.id ? deleteSave : undefined} />)}
       </div>
 
     </div>
