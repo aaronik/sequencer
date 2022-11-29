@@ -65,7 +65,7 @@ type ItemProps = {
 function Item({ item, loadSave }: ItemProps) {
   return (
     <div className="db-item">
-      <h6>{item.name}</h6>
+      <h6 className="user-name">{item.name}</h6>
       {item.saves.map(save => {
         return (
           <div style={{ textAlign: 'center', cursor: 'pointer' }} key={save.id} onClick={() => loadSave(save)}>
@@ -88,6 +88,8 @@ type SaveModalBodyProps = {
 
 // TODO
 // * Nice visual indicator for when the name is updated (checkbox next to header?)
+// * Don't allow twice saving of the same grid
+// * Require tune name
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
   const nameRef = useRef<HTMLInputElement>(null)
   const tuneNameRef = useRef<HTMLInputElement>(null)
@@ -178,7 +180,7 @@ export default function SaveModal(props: SaveModalProps) {
 
   return (
     <div id="save-modal" className={"modal" + (props.isOpen ? " open" : "")} onClick={e => e.stopPropagation()}>
-      <div id="left-items">
+      <div id="left-items" className={props.needsSecret ? "hidden" : ""}>
         <span id="sign-out" onClick={props.signOut}>sign out</span>
         <span id="connections-readout">{props.numConnections}</span>
       </div>

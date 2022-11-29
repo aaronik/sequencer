@@ -18,7 +18,10 @@ export const buildNetworkAndDb = (secret: string): [Network, Db<DbItem>] => {
   const network = new Net({
     secret: secret,
     networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3',
-    switchAddress: 'https://switchboard.aaronik.com'
+    switchAddress: 'https://switchboard.aaronik.com',
+    config: {
+      fastSwitchboardRequestInterval: 2000
+    }
   })
 
   // @ts-ignore

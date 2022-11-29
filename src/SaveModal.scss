@@ -10,10 +10,10 @@
     align-self: flex-start;
     position: absolute;
     margin: 0;
-    background-color: $dark-grey;
     color: $light-grey;
     display: flex;
     flex-direction: column;
+    transition: opacity 0.6s ease-in;
   }
 
   & #connections-readout {
@@ -45,6 +45,19 @@
 }
 
 #save-modal-body {
+  height: calc(90vh - 75px) // this is a desperate attempt to get this to stay inside of its parent
+  // overflow-y: auto; // With just this, it kiiiinda works but not really
+  // /* Hide scrollbar for Chrome, Safari and Opera */
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
+
+  // /* Hide scrollbar for IE, Edge and Firefox */
+  // & {
+  //   -ms-overflow-style: none;  /* IE and Edge */
+  //   scrollbar-width: none;  /* Firefox */
+  // }
+
   h4 {
     margin: 0;
     margin-bottom: 1vmin;
@@ -91,9 +104,15 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin-bottom: 2vmin;
 
     h6 {
       margin-right: 2vmin;
+    }
+
+    h6.user-name {
+      min-width: 5vw;
+      word-break: break-all;
     }
   }
 
@@ -107,6 +126,7 @@
 
   #load-section {
     overflow: auto;
+    max-height: calc(80vh - 20.5rem); // I don't like this but I can't otherwise get these into their parents
 
     /* Hide scrollbar for Chrome, Safari and Opera */
     &::-webkit-scrollbar {

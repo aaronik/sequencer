@@ -6,7 +6,7 @@ import { GRID_SIZE, PROPAGATION_SPEED, TUNINGS } from './constants'
 import Grid from './Grid'
 import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
-import { addAndReleaseClass, buildColumnClass, getActiveGridItems } from './util'
+import { addAndReleaseClass, buildColumnClass, disableAllGridItems, enableGridItem, getActiveGridItems } from './util'
 import SettingsModal from './SettingsModal'
 import SaveButton from './SaveButton'
 import SaveModal from './SaveModal'
@@ -73,8 +73,13 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
 let column = 0
 let isToneInitialized = false
 
-let network: Network
-let db: Db<DbItem>
+type Net = {
+  network?: Network
+  db?: Db<DbItem>
+}
+const net: Net = {
+
+}
 
 const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-network-secret') || ''
 const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
@@ -127,6 +132,41 @@ function App() {
   const [ourDbItem, setOurDbItem] = useState<DbItem>()
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  const signIn = (secret: string) => {
+    setNetworkSecretLocally(secret)
+    setSecret(secret)
+    const [network, db] = buildNetworkAndDb(secret)
+    net.network = network
+    net.db = db
+    updateDbItems()
+    network.on('add-connection', updateConnections)
+    network.on('destroy-connection', updateConnections)
+    db.onChange(updateDbItems)
+  }
+
+  useEffect(() => {
+    // The thinking here is that this means specifically that we've opened
+    // the page with a secret already in localStorage
+    if (secret && !net.network) {
+      signIn(secret)
+    }
+  }, [secret])
+
+  const signOut = () => {
+    setNetworkSecretLocally("")
+    setSecret("")
+    setNumConnections(0)
+    setOurDbItem(undefined)
+    setDbItems([])
+    net.network!.removeListener('add-connection', updateConnections)
+    net.network!.removeListener('destroy-connection', updateConnections)
+    net.db!.removeChangeHandlers()
+    net.network!.teardown()
+    net.db!.removeChangeHandlers()
+    delete net.network
+    delete net.db
+  }
+
   const serializeState = (): DbItem['saves'][number] => {
     return {
       id: window.crypto.randomUUID(),
@@ -135,6 +175,18 @@ function App() {
       tempo: tempo,
       activeGridItems: getActiveGridItems()
     }
+  }
+
+  const setSerializedState = (save: DbItem['saves'][number]) => {
+    const tuning = save.tuning as keyof typeof TUNINGS
+    if (TUNINGS[tuning]) {
+      setTuning(tuning)
+    }
+    setTempo(save.tempo)
+    disableAllGridItems()
+    save.activeGridItems.forEach(item => {
+      enableGridItem(item.i, item.j)
+    })
   }
 
   const bps = tempo / 60
@@ -163,42 +215,17 @@ function App() {
     startPlay()
   }, [tempo, tuning])
 
-  const updateConnections = () => setNumConnections(network.activeConnections.length)
+  const updateConnections = () => setNumConnections(net.network?.activeConnections.length || 0)
   const updateDbItems = () => {
-    let items = db.getAll().map(i => i.state)
+    if (!net.db) return
+    let items = net.db.getAll().map(i => i.state)
     items = items.filter(validateDbItem)
     setDbItems(items)
-    const ours = db.get(db.publicKey)?.state
+    const ours = net.db.get(net.db.publicKey)?.state
     if (ours && validateDbItem(ours)) {
       setOurDbItem(ours)
     }
   }
-
-  useEffect(() => {
-    // We're just firing up the app and we aren't signed in
-    if (!network && !secret) return
-
-    // We've signed out
-    if (network && !secret) {
-      network.teardown()
-      db.removeChangeHandlers()
-      return
-    }
-
-    [network, db] = buildNetworkAndDb(secret)
-
-    updateDbItems()
-
-    network?.on('add-connection', updateConnections)
-    network?.on('destroy-connection', updateConnections)
-    db?.onChange(updateDbItems)
-
-    return () => {
-      network?.removeListener('add-connection', updateConnections)
-      network?.removeListener('destroy-connection', updateConnections)
-      db?.removeChangeHandlers()
-    }
-  }, [secret])
 
   const stopPlay = (shouldResetColumn = true) => {
     if (shouldResetColumn) column = 0
@@ -240,20 +267,17 @@ function App() {
         isOpen={isSaveModalOpen}
         close={() => setIsSaveModalOpen(false)}
         needsSecret={!secret}
-        setSecret={(secret: string) => {
-          setNetworkSecretLocally(secret)
-          setSecret(secret)
-        }}
+        setSecret={signIn}
         numConnections={numConnections}
         ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
         dbItems={dbItems}
-        saveItem={(item: DbItem) => db.set(item)}
+        saveItem={(item: DbItem) => net.db!.set(item)}
         getSerializedCurrentState={serializeState}
-        loadSave={console.log}
-        signOut={() => {
-          setNetworkSecretLocally("")
-          setSecret("")
+        loadSave={save => {
+          setSerializedState(save)
+          setIsSaveModalOpen(false)
         }}
+        signOut={signOut}
       />
       <Grid activeColor={TUNINGS[tuning].color} />
       <div id="button-row" onClick={e => e.stopPropagation()}>

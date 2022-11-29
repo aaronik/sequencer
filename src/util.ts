@@ -20,6 +20,16 @@ export const toggleGridItem = (i: number, j: number) => {
   item(i, j).classList.toggle('enabled')
 }
 
+export const enableGridItem = (i: number, j: number) => {
+  item(i, j).classList.add('enabled')
+}
+
+export const disableAllGridItems = () => {
+  Array.from(document.getElementsByClassName('enabled')).forEach(item => {
+    item.classList.remove('enabled')
+  })
+}
+
 // This is the serialization logic :)
 export const getActiveGridItems = (): DbItem['saves'][number]['activeGridItems'] => {
   const htmlItems = document.getElementsByClassName('enabled')
