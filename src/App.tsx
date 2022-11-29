@@ -14,6 +14,7 @@ import type Network from '@browser-network/network'
 import type Db from '@browser-network/database'
 import { buildNetworkAndDb } from './network'
 import { DbItem } from './types'
+import React from 'react'
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -253,45 +254,47 @@ function App() {
   })
 
   return (
-    <div className="container">
-      <SettingsModal
-        isOpen={isSettingsModalOpen}
-        close={() => setIsSettingsModalOpen(false)}
-        tempo={tempo}
-        setTempo={setTempo}
-        tuning={tuning}
-        setTuning={setTuning}
-      />
-      <SaveModal
-        isOpen={isSaveModalOpen}
-        close={() => setIsSaveModalOpen(false)}
-        needsSecret={!secret}
-        setSecret={signIn}
-        numConnections={numConnections}
-        ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
-        dbItems={dbItems}
-        saveItem={(item: DbItem) => net.db!.set(item)}
-        getSerializedCurrentState={serializeState}
-        loadSave={save => {
-          setSerializedState(save)
-          setIsSaveModalOpen(false)
-        }}
-        signOut={signOut}
-      />
-      <Grid activeColor={TUNINGS[tuning].color} />
-      <div id="button-row" onClick={e => e.stopPropagation()}>
-        <SettingsButton onClick={() => {
-          setIsSettingsModalOpen(!isSettingsModalOpen)
-          setIsSaveModalOpen(false)
-        }} />
-        <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
-        <SaveButton onClick={() => {
-          setIsSaveModalOpen(!isSaveModalOpen)
-          setIsSettingsModalOpen(false)
-        }} />
+    <React.Fragment>
+      <div className="container">
+        <SettingsModal
+          isOpen={isSettingsModalOpen}
+          close={() => setIsSettingsModalOpen(false)}
+          tempo={tempo}
+          setTempo={setTempo}
+          tuning={tuning}
+          setTuning={setTuning}
+        />
+        <SaveModal
+          isOpen={isSaveModalOpen}
+          close={() => setIsSaveModalOpen(false)}
+          needsSecret={!secret}
+          setSecret={signIn}
+          numConnections={numConnections}
+          ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
+          dbItems={dbItems}
+          saveItem={(item: DbItem) => net.db!.set(item)}
+          getSerializedCurrentState={serializeState}
+          loadSave={save => {
+            setSerializedState(save)
+            setIsSaveModalOpen(false)
+          }}
+          signOut={signOut}
+        />
+        <Grid activeColor={TUNINGS[tuning].color} />
+        <div id="button-row" onClick={e => e.stopPropagation()}>
+          <SettingsButton onClick={() => {
+            setIsSettingsModalOpen(!isSettingsModalOpen)
+            setIsSaveModalOpen(false)
+          }} />
+          <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+          <SaveButton onClick={() => {
+            setIsSaveModalOpen(!isSaveModalOpen)
+            setIsSettingsModalOpen(false)
+          }} />
+        </div>
       </div>
       <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
-    </div>
+    </React.Fragment>
   );
 }
 

@@ -3,23 +3,20 @@
 body {
   background-color: black;
   color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
   overflow-y: clip;
 }
 
 #root {
-  position: fixed;
-  top: 0;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
