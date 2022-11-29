@@ -6,7 +6,7 @@ import { generateSecret, validateSecret } from './network'
 const SECRET_INFO_TEXT =
   `This is an algorithmically generated secret that's used to create the address space
   under which you save, load, and share your creations. It costs no money, is instant,
-  and is done right here in the app. This is possible via the amazing (ahem) `
+  and is done right here in the app. This is possible via the amazing `
 
 const SECRET_SUCCESS_TEXT =
   `A new secret has been generated. This is like a password -- store it in your favorite
@@ -88,6 +88,7 @@ export default function SecretPrompt({ setSecret, className }: { className: stri
       </button>
       <p id="explanation" className={explanationClass}>
         {text}
+        <br/>
         {text === SECRET_INFO_TEXT && <a href="https://github.com/browser-network/database" target="_blank" rel="noreferrer">Browser Network</a>}
       </p>
     </div>
