@@ -1,4 +1,4 @@
-import './reset.css';
+import './reset.css'
 import { useEffect, useRef, useState } from 'react'
 import * as Tone from 'tone'
 import './App.scss'
@@ -6,8 +6,14 @@ import { GRID_SIZE, PROPAGATION_SPEED, TUNINGS } from './constants'
 import Grid from './Grid'
 import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
-import { addAndReleaseClass, buildColumnClass } from './util'
-import SettingsModal from './SettingsModal';
+import { addAndReleaseClass, buildColumnClass, disableAllGridItems, enableGridItem, getActiveGridItems } from './util'
+import SettingsModal from './SettingsModal'
+import SaveButton from './SaveButton'
+import SaveModal from './SaveModal'
+import type Network from '@browser-network/network'
+import type Db from '@browser-network/database'
+import { buildNetworkAndDb } from './network'
+import { DbItem } from './types'
 
 // TODO
 // * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
@@ -67,6 +73,45 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
 let column = 0
 let isToneInitialized = false
 
+type Net = {
+  network?: Network
+  db?: Db<DbItem>
+}
+const net: Net = {
+
+}
+
+const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-network-secret') || ''
+const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
+
+const DEFAULT_DB_ITEM = {
+  id: window.crypto.randomUUID(),
+  name: "",
+  saves: []
+}
+
+const validateDbItem = (dbItem: DbItem): boolean => {
+  if (!dbItem) return false
+  if (!dbItem.id) return false
+  if (typeof dbItem.name !== 'string') return false
+  if (!Array.isArray(dbItem.saves)) return false
+
+  for (let save of dbItem.saves) {
+    if (!save.id) return false
+    if (typeof save.name !== 'string') return false
+    if (!save.tuning) return false
+    if (typeof save.tempo !== 'number') return false
+    if (!Array.isArray(save.activeGridItems)) return false
+
+    for (let gridItem of save.activeGridItems) {
+      if (!Number.isSafeInteger(gridItem.i)) return false
+      if (!Number.isSafeInteger(gridItem.j)) return false
+    }
+  }
+
+  return true
+}
+
 // A note on play timing.
 // I tried:
 // * Setting a new setTimeout on each invocation of play, but this made
@@ -78,9 +123,70 @@ let isToneInitialized = false
 function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false)
   const [tempo, setTempo] = useState(150)
   const [tuning, setTuning] = useState<keyof typeof TUNINGS>('maj5')
+  const [secret, setSecret] = useState(getLocallyStoredNetworkSecret())
+  const [numConnections, setNumConnections] = useState(0)
+  const [dbItems, setDbItems] = useState<DbItem[]>([])
+  const [ourDbItem, setOurDbItem] = useState<DbItem>()
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const signIn = (secret: string) => {
+    setNetworkSecretLocally(secret)
+    setSecret(secret)
+    const [network, db] = buildNetworkAndDb(secret)
+    net.network = network
+    net.db = db
+    updateDbItems()
+    network.on('add-connection', updateConnections)
+    network.on('destroy-connection', updateConnections)
+    db.onChange(updateDbItems)
+  }
+
+  useEffect(() => {
+    // The thinking here is that this means specifically that we've opened
+    // the page with a secret already in localStorage
+    if (secret && !net.network) {
+      signIn(secret)
+    }
+  }, [secret])
+
+  const signOut = () => {
+    setNetworkSecretLocally("")
+    setSecret("")
+    setNumConnections(0)
+    setOurDbItem(undefined)
+    setDbItems([])
+    net.network!.removeListener('add-connection', updateConnections)
+    net.network!.removeListener('destroy-connection', updateConnections)
+    net.db!.removeChangeHandlers()
+    net.network!.teardown()
+    delete net.network
+    delete net.db
+  }
+
+  const serializeState = (): DbItem['saves'][number] => {
+    return {
+      id: window.crypto.randomUUID(),
+      name: "",
+      tuning: tuning,
+      tempo: tempo,
+      activeGridItems: getActiveGridItems()
+    }
+  }
+
+  const setSerializedState = (save: DbItem['saves'][number]) => {
+    const tuning = save.tuning as keyof typeof TUNINGS
+    if (TUNINGS[tuning]) {
+      setTuning(tuning)
+    }
+    setTempo(save.tempo)
+    disableAllGridItems()
+    save.activeGridItems.forEach(item => {
+      enableGridItem(item.i, item.j)
+    })
+  }
 
   const bps = tempo / 60
   const playInterval = 500 / bps
@@ -108,6 +214,18 @@ function App() {
     startPlay()
   }, [tempo, tuning])
 
+  const updateConnections = () => setNumConnections(net.network?.activeConnections.length || 0)
+  const updateDbItems = () => {
+    if (!net.db) return
+    let items = net.db.getAll().map(i => i.state)
+    items = items.filter(validateDbItem)
+    setDbItems(items)
+    const ours = net.db.get(net.db.publicKey)?.state
+    if (ours && validateDbItem(ours)) {
+      setOurDbItem(ours)
+    }
+  }
+
   const stopPlay = (shouldResetColumn = true) => {
     if (shouldResetColumn) column = 0
     clearInterval(playbackInterval.current!)
@@ -125,7 +243,13 @@ function App() {
     if (e.key === ' ') togglePlay()
     if (e.key === 'Escape') {
       setIsSettingsModalOpen(false)
+      setIsSaveModalOpen(false)
     }
+  })
+
+  useEvent('click', () => {
+    setIsSettingsModalOpen(false)
+    setIsSaveModalOpen(false)
   })
 
   return (
@@ -138,10 +262,33 @@ function App() {
         tuning={tuning}
         setTuning={setTuning}
       />
-      <Grid activeColor={TUNINGS[tuning].color}/>
-      <div id="button-row">
-        <SettingsButton onClick={() => setIsSettingsModalOpen(!isSettingsModalOpen)} />
+      <SaveModal
+        isOpen={isSaveModalOpen}
+        close={() => setIsSaveModalOpen(false)}
+        needsSecret={!secret}
+        setSecret={signIn}
+        numConnections={numConnections}
+        ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
+        dbItems={dbItems}
+        saveItem={(item: DbItem) => net.db!.set(item)}
+        getSerializedCurrentState={serializeState}
+        loadSave={save => {
+          setSerializedState(save)
+          setIsSaveModalOpen(false)
+        }}
+        signOut={signOut}
+      />
+      <Grid activeColor={TUNINGS[tuning].color} />
+      <div id="button-row" onClick={e => e.stopPropagation()}>
+        <SettingsButton onClick={() => {
+          setIsSettingsModalOpen(!isSettingsModalOpen)
+          setIsSaveModalOpen(false)
+        }} />
         <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
+        <SaveButton onClick={() => {
+          setIsSaveModalOpen(!isSaveModalOpen)
+          setIsSettingsModalOpen(false)
+        }} />
       </div>
       <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
     </div>

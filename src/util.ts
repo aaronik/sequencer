@@ -1,3 +1,4 @@
+import { DbItem } from "./types"
 
 /**
 * @description Add {className} to {node} in {start} ms, and remove it in {end} ms.
@@ -13,4 +14,31 @@ export const buildNeighborClass       = (i: number, j: number) => `neighbor-${i}
 export const buildSecondNeighborClass = (i: number, j: number) => `second-neighbor-${i}-${j}`
 export const item = (i: number, j: number) => document.querySelector('.' + buildItemClass(i, j))!
 
+// This lives here so that the toggle logic lives right next to the serialization
+// logic.
+export const toggleGridItem = (i: number, j: number) => {
+  item(i, j).classList.toggle('enabled')
+}
 
+export const enableGridItem = (i: number, j: number) => {
+  item(i, j).classList.add('enabled')
+}
+
+export const disableAllGridItems = () => {
+  Array.from(document.getElementsByClassName('enabled')).forEach(item => {
+    item.classList.remove('enabled')
+  })
+}
+
+// This is the serialization logic :)
+export const getActiveGridItems = (): DbItem['saves'][number]['activeGridItems'] => {
+  const htmlItems = document.getElementsByClassName('enabled')
+  return Array.from(htmlItems).map(item => {
+    return {
+      // @ts-ignore
+      i: +item.dataset.i as number,
+      // @ts-ignore
+      j: +item.dataset.j as number
+    }
+  })
+}

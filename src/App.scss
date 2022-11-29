@@ -44,6 +44,11 @@ body {
   &:active {
     filter: brightness(250%);
   }
+
+  &:disabled {
+    filter: brightness(50%) grayscale(1) !important;
+    cursor: default !important;
+  }
 }
 
 .button-sizing {
@@ -60,6 +65,8 @@ body {
   padding: 3vmin;
   transition: transform 0.2s;
   transform: rotateY(90deg);
+  z-index: 100;
+  margin-left: 0.55vmin; // I'm not quite sure why but this is what it takes to center this
 
   &.open {
     transform: rotateY(0deg);

@@ -3,6 +3,18 @@
 #settings-modal {
   display: flex;
   flex-direction: column;
+  overflow-x: clip;
+  overflow-y: auto;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  & {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
 
   & .close-button {
     align-self: flex-end;
@@ -27,6 +39,7 @@
     & h3 { // these are meant to be the headers
       margin: 0;
       margin-right: 3vmin;
+      min-width: 4rem;
     }
   }
 
@@ -89,5 +102,18 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
+  }
+
+  & #clear-grid-button {
+    background-color: $grey;
+    color: white;
+    border: none;
+    padding: 3vmin;
+    border-radius: 0.5vmin;
+    border: 2px solid red;
+
+    &:hover {
+      border: 2px solid red;
+    }
   }
 }
