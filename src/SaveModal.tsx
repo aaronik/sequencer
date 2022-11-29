@@ -140,7 +140,7 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
           ref={tuneNameRef}
           onChange={e => setTuneName(e.currentTarget.value)}
         />
-        <button style={{ width: '6rem' }}className="button-effects" disabled={!tuneName} onClick={serializeAndSaveItem}>Save</button>
+        <button className="button-effects" disabled={!tuneName} onClick={serializeAndSaveItem}>Save</button>
       </div>
 
       <hr />
