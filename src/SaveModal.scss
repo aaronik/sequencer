@@ -4,19 +4,32 @@
   display: flex;
   flex-direction: column;
   min-height: 21rem; // This is so the save secret blurb is always inside the box. text :sigh
+  height: 90vh;
 
-  & #connections-readout {
+  & #left-items {
     align-self: flex-start;
     position: absolute;
-    margin: 3.5vmin 0;
-    padding: 0rem 0.3rem;
+    margin: 0;
     background-color: $dark-grey;
-    border-radius: 100%;
     color: $light-grey;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & #connections-readout {
+    padding: 0rem 0.3rem;
+    width: 0.6rem;
+    border-radius: 100%;
     border: 1px solid $light-grey;
+    margin-top: 0.6vmin;
+  }
+
+  & #sign-out {
+    cursor: pointer;
   }
 
   & .close-button {
+    font-size: 1.5rem;
     align-self: flex-end;
     position: absolute;
     padding: 1.5vmin 3vmin;
@@ -32,6 +45,15 @@
 }
 
 #save-modal-body {
+  h4 {
+    margin: 0;
+    margin-bottom: 1vmin;
+  }
+
+  h6 {
+    margin: 0;
+  }
+
   // General for an input and a submit button
   & .input-group {
     display: flex;
@@ -43,7 +65,7 @@
       border-bottom-left-radius: 2vmin;
       flex-grow: 5;
       border: none;
-      width: 80%;
+      width: 100%;
 
       &:focus-visible {
         outline: none;
@@ -62,6 +84,39 @@
       background: $light-grey;
       color: white;
       min-width: max-content;
+    }
+  }
+
+  .db-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    h6 {
+      margin-right: 2vmin;
+    }
+  }
+
+  .mini-grid {
+    font-size: 0.6rem;
+    line-height: 0.38rem;
+    user-select: none;
+    margin: 0;
+    margin-right: 1vmin;
+  }
+
+  #load-section {
+    overflow: auto;
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    & {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
     }
   }
 }

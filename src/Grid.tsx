@@ -1,6 +1,6 @@
 import './Grid.scss'
 import { GRID_SIZE } from "./constants"
-import { buildColumnClass, buildItemClass, buildNeighborClass, buildSecondNeighborClass, item } from "./util"
+import { buildColumnClass, buildItemClass, buildNeighborClass, buildSecondNeighborClass, toggleGridItem } from "./util"
 
 type GridProps = {
   activeColor: string
@@ -8,7 +8,7 @@ type GridProps = {
 
 export default function Grid({ activeColor }: GridProps) {
   const onClick = (i: number, j: number) => () => {
-    item(i, j).classList.toggle('enabled')
+    toggleGridItem(i, j)
   }
 
   const generateInnerGrid = () => {
@@ -47,6 +47,7 @@ export default function Grid({ activeColor }: GridProps) {
 
         const key = `${i}-${j}`
 
+        // The data attributes here are needed for both CSS animations and serialization
         gridItems.push(
           <div data-i={i} data-j={j} key={key} className={classNames.join(' ')} onClick={onClick(i, j)}>{}</div>
         )

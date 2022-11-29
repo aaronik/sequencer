@@ -6,7 +6,7 @@ import { GRID_SIZE, PROPAGATION_SPEED, TUNINGS } from './constants'
 import Grid from './Grid'
 import PlayButton from './PlayButton'
 import SettingsButton from './SettingsButton'
-import { addAndReleaseClass, buildColumnClass } from './util'
+import { addAndReleaseClass, buildColumnClass, getActiveGridItems } from './util'
 import SettingsModal from './SettingsModal'
 import SaveButton from './SaveButton'
 import SaveModal from './SaveModal'
@@ -85,6 +85,28 @@ const DEFAULT_DB_ITEM = {
   saves: []
 }
 
+const validateDbItem = (dbItem: DbItem): boolean => {
+  if (!dbItem) return false
+  if (!dbItem.id) return false
+  if (typeof dbItem.name !== 'string') return false
+  if (!Array.isArray(dbItem.saves)) return false
+
+  for (let save of dbItem.saves) {
+    if (!save.id) return false
+    if (typeof save.name !== 'string') return false
+    if (!save.tuning) return false
+    if (typeof save.tempo !== 'number') return false
+    if (!Array.isArray(save.activeGridItems)) return false
+
+    for (let gridItem of save.activeGridItems) {
+      if (!Number.isSafeInteger(gridItem.i)) return false
+      if (!Number.isSafeInteger(gridItem.j)) return false
+    }
+  }
+
+  return true
+}
+
 // A note on play timing.
 // I tried:
 // * Setting a new setTimeout on each invocation of play, but this made
@@ -104,6 +126,16 @@ function App() {
   const [dbItems, setDbItems] = useState<DbItem[]>([])
   const [ourDbItem, setOurDbItem] = useState<DbItem>()
   const playbackInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const serializeState = (): DbItem['saves'][number] => {
+    return {
+      id: window.crypto.randomUUID(),
+      name: "",
+      tuning: tuning,
+      tempo: tempo,
+      activeGridItems: getActiveGridItems()
+    }
+  }
 
   const bps = tempo / 60
   const playInterval = 500 / bps
@@ -133,17 +165,29 @@ function App() {
 
   const updateConnections = () => setNumConnections(network.activeConnections.length)
   const updateDbItems = () => {
-    setDbItems(db.getAll().map(i => i.state))
-    setOurDbItem(db.get(db.publicKey)?.state)
+    let items = db.getAll().map(i => i.state)
+    items = items.filter(validateDbItem)
+    setDbItems(items)
+    const ours = db.get(db.publicKey)?.state
+    if (ours && validateDbItem(ours)) {
+      setOurDbItem(ours)
+    }
   }
 
   useEffect(() => {
-    if (!secret) return
+    // We're just firing up the app and we aren't signed in
+    if (!network && !secret) return
+
+    // We've signed out
+    if (network && !secret) {
+      network.teardown()
+      db.removeChangeHandlers()
+      return
+    }
 
     [network, db] = buildNetworkAndDb(secret)
 
-    const dbItem = db.get(db.publicKey)?.state
-    if (dbItem) { setOurDbItem(dbItem) }
+    updateDbItems()
 
     network?.on('add-connection', updateConnections)
     network?.on('destroy-connection', updateConnections)
@@ -203,9 +247,12 @@ function App() {
         numConnections={numConnections}
         ourDbItem={ourDbItem || DEFAULT_DB_ITEM}
         dbItems={dbItems}
-        saveItem={(item: DbItem) => {
-          console.log('saving item:', item)
-          db.set(item)
+        saveItem={(item: DbItem) => db.set(item)}
+        getSerializedCurrentState={serializeState}
+        loadSave={console.log}
+        signOut={() => {
+          setNetworkSecretLocally("")
+          setSecret("")
         }}
       />
       <Grid activeColor={TUNINGS[tuning].color} />
