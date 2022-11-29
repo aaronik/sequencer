@@ -44,6 +44,11 @@ body {
   &:active {
     filter: brightness(250%);
   }
+
+  &:disabled {
+    filter: brightness(50%) grayscale(1) !important;
+    cursor: default !important;
+  }
 }
 
 .button-sizing {

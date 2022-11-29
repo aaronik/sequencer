@@ -4,21 +4,9 @@ import { DbItem } from './types'
 import SecretPrompt from './SaveModalSecretPrompt'
 import { GRID_SIZE, TUNINGS } from './constants'
 
-// Compute a single empty square array at load time for saving
-// of compute speed and costing of very little memory
-
-
-// How to visually represent one of these?
-// * Regular old grid of <div>s
-//  + Doable
-//  - Inefficient - can the browser handle that many? There might be a hundred of these
-// * Canvas
-//  + Very hard
-//  - Still would be tons of canvases. I don't think this is the way.
-// * Text
-//  + Doable
-//  + Easy on the browser
-//  - Not trivial to get colors in there, but not terribly hard
+/**
+* @description Represents a grid with text only, using little squares.
+*/
 function MiniGrid({ save }: { save: DbItem['saves'][number] }) {
 
   const squareMatrix: string[][] = []
@@ -90,47 +78,66 @@ type SaveModalBodyProps = {
 // * Nice visual indicator for when the name is updated (checkbox next to header?)
 // * Don't allow twice saving of the same grid
 // * Require tune name
+// * Delete your own tunes
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
-  const nameRef = useRef<HTMLInputElement>(null)
-  const tuneNameRef = useRef<HTMLInputElement>(null)
+  const [personName, setPersonName] = useState("")
+  const [tuneName, setTuneName] = useState("")
+  const [isNameSaveIndicatorShowing, setIsNameSaveIndicatorShowing] = useState(false)
+  const [isTuneSaveIndicatorShowing, setIsTuneSaveIndicatorShowing] = useState(false)
 
   const saveName = () => {
-    const newName = nameRef.current?.value
-    if (!newName) { return }
-    ourDbItem.name = nameRef.current?.value
+    if (!personName) { return }
+    ourDbItem.name = personName
     saveItem(ourDbItem)
+
+    setIsNameSaveIndicatorShowing(true)
+    setTimeout(() => {
+      setIsNameSaveIndicatorShowing(false)
+    }, 3000)
   }
 
   const serializeAndSaveItem = () => {
-    if (!ourDbItem) return
+    if (!ourDbItem) return // TODO on these returns make a red check
     const serialized = getSerializedCurrentState()
-    serialized.name = tuneNameRef.current?.value || ""
+    serialized.name = tuneName
     ourDbItem.saves.push(serialized)
     saveItem(ourDbItem)
+    setTuneName("")
+
+    setIsTuneSaveIndicatorShowing(true)
+    setTimeout(() => {
+      setIsTuneSaveIndicatorShowing(false)
+    }, 3000)
   }
 
   return (
     <div id="save-modal-body" onKeyDown={e => e.stopPropagation()}>
-      <h4>Saving under the name:</h4>
+      <div className="row">
+        <h4>Saving under the name:</h4>
+        <span style={{ transition: 'opacity: 0.3s', color: 'green' }} className={isNameSaveIndicatorShowing ? "" : "hidden"}>&nbsp;✔</span>
+      </div>
       <div className="input-group">
         <input
           placeholder="Your name"
           defaultValue={ourDbItem.name}
-          ref={nameRef}
+          onChange={e => setPersonName(e.currentTarget.value)}
         />
-        <button className="button-effects" onClick={saveName}>Update</button>
+        <button className="button-effects" disabled={!personName} onClick={saveName}>Update</button>
       </div>
 
       <hr />
 
-      <h4>Save the current tune as:</h4>
+      <div className="row">
+        <h4>Save the current tune as:</h4>
+        <span style={{ transition: 'opacity: 0.3s', color: 'green' }} className={isTuneSaveIndicatorShowing ? "" : "hidden"}>&nbsp;✔</span>
+      </div>
       <div className="input-group">
         <input
           placeholder="Name this tune"
           maxLength={15}
-          ref={tuneNameRef}
+          onChange={e => setTuneName(e.currentTarget.value)}
         />
-        <button className="button-effects" onClick={serializeAndSaveItem}>Save</button>
+        <button className="button-effects" disabled={!tuneName} onClick={serializeAndSaveItem}>Save</button>
       </div>
 
       <hr />
