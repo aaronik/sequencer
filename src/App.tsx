@@ -232,16 +232,6 @@ function App() {
     setIsPlaying(!isPlaying)
   }
 
-  const onSetTuning = (tuning: keyof typeof TUNINGS) => {
-    setIsSettingsModalOpen(false)
-    setTuning(tuning)
-  }
-
-  const onClearGrid = () => {
-    setIsSettingsModalOpen(false)
-    disableAllGridItems()
-  }
-
   useEvent('keydown', (event) => {
     const e = event as KeyboardEvent
     if (e.key === ' ') togglePlay()
@@ -265,8 +255,7 @@ function App() {
           tempo={tempo}
           setTempo={setTempo}
           tuning={tuning}
-          setTuning={onSetTuning}
-          onClearGrid={onClearGrid}
+          setTuning={setTuning}
         />
         <SaveModal
           isOpen={isSaveModalOpen}
