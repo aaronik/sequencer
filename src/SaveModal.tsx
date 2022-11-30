@@ -59,7 +59,7 @@ function Item({ item, loadSave, deleteSave }: ItemProps) {
           <div key={save.id}>
             <div style={{ justifyContent: 'space-around' }} className="row">
               <h6>{save.name}</h6>
-              { !!deleteSave && <button className="delete-button button-effects" onClick={() => deleteSave(save.id)}>⊗</button>}
+              {!!deleteSave && <button className="delete-button button-effects" onClick={() => deleteSave(save.id)}>⊗</button>}
             </div>
             <div style={{ cursor: 'pointer' }} onClick={() => loadSave(save)}>
               <MiniGrid save={save} />
@@ -102,7 +102,6 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
   const serializeAndSaveItem = () => {
     if (!ourDbItem) return // TODO on these returns make a red check
     const serialized = getSerializedCurrentState()
-    console.log('saving, serialized id', serialized.id)
     serialized.name = tuneName
     ourDbItem.saves.push(serialized)
     saveItem(ourDbItem)
@@ -123,8 +122,10 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
 
   // Make sure ours is always on top
   const ourIndex = dbItems.findIndex(item => item.id === ourDbItem.id)
-  dbItems.splice(ourIndex, 1)
-  dbItems.unshift(ourDbItem)
+  if (ourIndex !== -1) {
+    dbItems.splice(ourIndex, 1)
+    dbItems.unshift(ourDbItem)
+  }
 
   // We don't want to render any that have a name but don't have any saves
   dbItems = dbItems.filter(item => !!item.saves.length)
