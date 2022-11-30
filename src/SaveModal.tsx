@@ -81,6 +81,8 @@ type SaveModalBodyProps = {
 
 // TODO
 // * Don't allow twice saving of the same grid
+// * Loading indicator of some sort for an empty load screen? Although what if nobody has a save?
+//   Show loading if there're no connections AND there're no saves.
 function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
   const tuneNameRef = useRef<HTMLInputElement>(null)
   const [personName, setPersonName] = useState("")
