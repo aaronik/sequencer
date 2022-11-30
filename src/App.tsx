@@ -16,13 +16,6 @@ import { buildNetworkAndDb } from './network'
 import { DbItem } from './types'
 import React from 'react'
 
-// TODO
-// * I think it'd be dope to have another set of rows underneath, maybe with a different color, that represented drums.
-// In searching for making drums with tone.js, i found these limited examples:
-// - https://tonejs.github.io/docs/14.7.77/MembraneSynth.html
-// - https://gist.github.com/vibertthio/9c815b7edeee2aab3aec35de7dfa57bb
-// In short, I think the only real way to get good drums is to sample.
-
 const container = () => document.querySelector('.grid')!
 
 const animate = (i: number, j: number) => {
@@ -73,6 +66,7 @@ const useEvent = (event: string, listener: (e: Event) => void, passive = false) 
 
 let column = 0
 let isToneInitialized = false
+let synth: Tone.PolySynth
 
 type Net = {
   network?: Network
@@ -196,9 +190,8 @@ function App() {
     if (!isToneInitialized) {
       await Tone.start()
       isToneInitialized = true
+      synth = new Tone.PolySynth(Tone.Synth).toDestination()
     }
-
-    const synth = new Tone.PolySynth(Tone.Synth).toDestination()
 
     playColumn(column, synth, tuning)
     playbackInterval.current = setInterval(() => {
