@@ -126,6 +126,13 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
   dbItems.splice(ourIndex, 1)
   dbItems.unshift(ourDbItem)
 
+  // We don't want to render any that have a name but don't have any saves
+  dbItems = dbItems.filter(item => !!item.saves.length)
+
+  // And while we're at it, let's not render any for people that don't have a name,
+  // even they have saves.
+  dbItems = dbItems.filter(item => !!item.name)
+
   return (
     <div id="save-modal-body" onKeyDown={e => e.stopPropagation()}>
       <div className="row">
