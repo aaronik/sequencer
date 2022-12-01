@@ -1,6 +1,10 @@
 export type DbItem = {
   id: string
   name: string
+  blocks: {
+    name: string
+    address: string
+  }[]
   saves: {
     id: string
     name: string

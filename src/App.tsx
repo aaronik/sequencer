@@ -79,10 +79,11 @@ const net: Net = {
 const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-network-secret') || ''
 const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
 
-const DEFAULT_DB_ITEM = {
+const DEFAULT_DB_ITEM: DbItem = {
   id: window.crypto.randomUUID(),
   name: "",
-  saves: []
+  saves: [],
+  blocks: []
 }
 
 const validateDbItem = (dbItem: DbItem): boolean => {
@@ -217,6 +218,10 @@ function App() {
     const ours = net.db.get(net.db.publicKey)?.state
     if (ours && validateDbItem(ours)) {
       setOurDbItem(ours)
+      // It's not really optional but there's already state in the network without these!
+      ours.blocks?.forEach(block => {
+        net.db!.deny(block.address)
+      })
     }
   }
 
@@ -230,6 +235,44 @@ function App() {
     if (isPlaying) stopPlay()
     else startPlay()
     setIsPlaying(!isPlaying)
+  }
+
+  // TODO
+  // Leaving midway through a big thing, unfortunately.
+  // * Changed network switchboard handling (removing answer loop)
+  // * Updated DB with allow/deny
+  // * Added block feature here.
+  // * Issue is now I'm not seeing my FF window connect with my chrome window to test
+  // this new feature.
+  // * Gotta leave for lunch / metaculus interview thing.
+
+  /**
+  * @description Note that personId here is _not_ the db/network's address
+  * space, it's the id we randomly assign within each person's state, ie
+  * DbItem['id']
+  */
+  const onBlockPerson = (address: string) => {
+    const item = dbItems.find(item => item.id === address)
+    if (!item) { return console.warn('Tried to block person we couldn\'t find') }
+    const wrappedDbItem = net.db!.getAll().find(wrapped => wrapped.state.id === address)
+    if (!wrappedDbItem) { return console.warn('Tried to block person we couldn\'t find') }
+
+    // We have to handle this because the network is already populated with state without
+    if (ourDbItem && !ourDbItem?.blocks) ourDbItem.blocks = []
+    ourDbItem!.blocks.push({
+      name: item.name,
+      address: wrappedDbItem.publicKey
+    })
+    net.db!.deny(wrappedDbItem.publicKey)
+    net.db!.set(ourDbItem!)
+  }
+
+  const onAllowPerson = (address: string) => {
+    net.db?.allow(address)
+    ourDbItem!.blocks = ourDbItem!.blocks.filter(block => {
+      return block.address !== address
+    })
+    net.db?.set(ourDbItem!)
   }
 
   useEvent('keydown', (event) => {
@@ -256,6 +299,8 @@ function App() {
           setTempo={setTempo}
           tuning={tuning}
           setTuning={setTuning}
+          blocks={ourDbItem?.blocks}
+          allow={onAllowPerson}
         />
         <SaveModal
           isOpen={isSaveModalOpen}
@@ -271,6 +316,7 @@ function App() {
             setSerializedState(save)
             setIsSaveModalOpen(false)
           }}
+          block={onBlockPerson}
           signOut={signOut}
         />
         <Grid activeColor={TUNINGS[tuning].color} />

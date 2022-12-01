@@ -96,14 +96,29 @@
     align-items: center;
     margin-bottom: 2vmin;
 
-    h6 {
+    h5 {
+      margin: 0;
       margin-right: 2vmin;
     }
 
-    h6.user-name {
+    & .name-group {
+      // text-align: center;
+    }
+
+    & .user-name {
       min-width: 7em;
       width: 7em; // both this and above are necessary for word-break and size
       word-break: break-all;
+    }
+
+    & .block-button {
+      padding: 1em;
+      padding-left: 0;
+      background: $dark-grey;
+      border-radius: 0.3em;
+      color: darkred;
+      width: max-content;
+      font-size: xx-small;
     }
 
     & .delete-button {

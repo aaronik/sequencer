@@ -1,6 +1,7 @@
 import { TUNINGS } from './constants'
 import './SettingsModal.scss'
 import SettingsModalTempoRow from './SettingsModalTempoRow'
+import { DbItem } from './types'
 import { disableAllGridItems } from './util'
 
 type SettingsModalProps = {
@@ -10,14 +11,14 @@ type SettingsModalProps = {
   setTempo: (tempo: number) => void
   tuning: keyof typeof TUNINGS
   setTuning: (tuning: keyof typeof TUNINGS) => void
+  blocks?: DbItem['blocks']
+  allow: (address: string) => void
 }
 
-export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: tuningKey, setTuning }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: tuningKey, setTuning, blocks, allow }: SettingsModalProps) {
 
   const generateTuningSelectionStyle = (color: string) => {
-    return {
-      borderBottom: 'solid 1vmin ' + color
-    }
+    return { borderBottom: 'solid 1vmin ' + color }
   }
 
   return (
@@ -61,6 +62,20 @@ export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: 
           Clear the grid
         </button>
       </div>
+
+      {!!blocks?.length &&
+        <div className="row">
+          <h3>Blocked <br/>Users</h3>
+          {blocks.map(block => {
+            return (
+              <button key={block.address} className="button-effects blocked-user" onClick={() => allow(block.address)}>
+                {block.name}
+              </button>
+            )
+          })}
+        </div>
+      }
+
     </div>
   )
 }

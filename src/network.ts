@@ -29,6 +29,7 @@ export const buildNetworkAndDb = (secret: string): [Network, Db<DbItem>] => {
   window.network = network
 
   const db = new Database<DbItem>({
+    // @ts-ignore // TODO update these and remove this
     network: network,
     secret: secret,
     appId: 'sequencer-db'

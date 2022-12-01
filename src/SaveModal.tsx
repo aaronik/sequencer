@@ -48,12 +48,19 @@ type ItemProps = {
   item: DbItem,
   loadSave: (save: DbItem['saves'][number]) => void
   deleteSave?: (saveId: string) => void
+  block: (personId: string) => void
+  isOurs: boolean
 }
 
-function Item({ item, loadSave, deleteSave }: ItemProps) {
+// One row -- a single person, with many saves
+function Item({ item, loadSave, deleteSave, block, isOurs }: ItemProps) {
+
   return (
     <div className="db-item">
-      <h6 className="user-name">{item.name}</h6>
+      <div className="name-group">
+        <h5 className="user-name">{item.name}</h5>
+        {isOurs || <h6 className="button-effects block-button" onClick={() => block(item.id)}>Block</h6>}
+      </div>
       {item.saves.map(save => {
         return (
           <div key={save.id}>
@@ -77,13 +84,14 @@ type SaveModalBodyProps = {
   saveItem: (item: DbItem) => void
   getSerializedCurrentState: () => DbItem['saves'][number]
   loadSave: (save: DbItem['saves'][number]) => void
+  block: (personId: string) => void
 }
 
 // TODO
 // * Don't allow twice saving of the same grid
 // * Loading indicator of some sort for an empty load screen? Although what if nobody has a save?
 //   Show loading if there're no connections AND there're no saves.
-function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState, loadSave }: SaveModalBodyProps) {
+function SaveModalBody(props: SaveModalBodyProps) {
   const tuneNameRef = useRef<HTMLInputElement>(null)
   const [personName, setPersonName] = useState("")
   const [tuneName, setTuneName] = useState("")
@@ -92,8 +100,8 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
 
   const saveName = () => {
     if (!personName) { return }
-    ourDbItem.name = personName
-    saveItem(ourDbItem)
+    props.ourDbItem.name = personName
+    props.saveItem(props.ourDbItem)
 
     setIsNameSaveIndicatorShowing(true)
     setTimeout(() => {
@@ -102,11 +110,11 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
   }
 
   const serializeAndSaveItem = () => {
-    if (!ourDbItem) return // TODO on these returns make a red check
-    const serialized = getSerializedCurrentState()
+    if (!props.ourDbItem) return // TODO on these returns make a red check
+    const serialized = props.getSerializedCurrentState()
     serialized.name = tuneName
-    ourDbItem.saves.push(serialized)
-    saveItem(ourDbItem)
+    props.ourDbItem.saves.push(serialized)
+    props.saveItem(props.ourDbItem)
     tuneNameRef.current!.value = ""
     setTuneName("")
 
@@ -117,16 +125,17 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
   }
 
   const deleteSave = (saveId: string) => {
-    if (!ourDbItem) return
-    ourDbItem.saves = ourDbItem.saves.filter(save => save.id !== saveId)
-    saveItem(ourDbItem)
+    if (!props.ourDbItem) return
+    props.ourDbItem.saves = props.ourDbItem.saves.filter(save => save.id !== saveId)
+    props.saveItem(props.ourDbItem)
   }
 
   // Make sure ours is always on top
-  const ourIndex = dbItems.findIndex(item => item.id === ourDbItem.id)
+  const ourIndex = props.dbItems.findIndex(item => item.id === props.ourDbItem.id)
+  let dbItems = props.dbItems
   if (ourIndex !== -1) {
     dbItems.splice(ourIndex, 1)
-    dbItems.unshift(ourDbItem)
+    dbItems.unshift(props.ourDbItem)
   }
 
   // We don't want to render any that have a name but don't have any saves
@@ -145,7 +154,7 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
       <div className="input-group">
         <input
           placeholder="Your name"
-          defaultValue={ourDbItem.name}
+          defaultValue={props.ourDbItem.name}
           onChange={e => setPersonName(e.currentTarget.value)}
         />
         <button className="button-effects" disabled={!personName} onClick={saveName}>Update</button>
@@ -172,7 +181,18 @@ function SaveModalBody({ dbItems, saveItem, ourDbItem, getSerializedCurrentState
       <h4>Load:</h4>
 
       <div id="load-section">
-        {dbItems.map(item => <Item key={item.id} item={item} loadSave={loadSave} deleteSave={item.id === ourDbItem.id ? deleteSave : undefined} />)}
+        {dbItems.map(item => {
+          return (
+            <Item
+              key={item.id}
+              item={item}
+              loadSave={props.loadSave}
+              deleteSave={item.id === props.ourDbItem.id ? deleteSave : undefined}
+              block={props.block}
+              isOurs={item.id === props.ourDbItem.id}
+            />
+          )
+        })}
       </div>
 
     </div>
@@ -191,6 +211,7 @@ type SaveModalProps = {
   getSerializedCurrentState: () => DbItem['saves'][number]
   loadSave: (save: DbItem['saves'][number]) => void
   signOut: () => void
+  block: (personId: string) => void
 }
 
 export default function SaveModal(props: SaveModalProps) {
@@ -235,6 +256,7 @@ export default function SaveModal(props: SaveModalProps) {
           ourDbItem={props.ourDbItem}
           saveItem={props.saveItem}
           getSerializedCurrentState={props.getSerializedCurrentState}
+          block={props.block}
         />
       }
     </div>

@@ -5,7 +5,9 @@
   flex-direction: column;
   overflow-x: clip;
   overflow-y: auto;
-  height: min-content;
+  position: fixed;
+  top: 5vh;
+  bottom: 5vh;
 
   /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
@@ -40,8 +42,8 @@
 
     & h3 { // these are meant to be the headers
       margin: 0;
-      margin-right: 3vmin;
-      min-width: 4rem;
+      margin-right: 2vmin;
+      min-width: 5rem;
     }
   }
 
@@ -113,9 +115,21 @@
     padding: 3vmin;
     border-radius: 0.5vmin;
     border: 2px solid red;
+    font-size: 3vmin;
 
     &:hover {
       border: 2px solid red;
     }
+  }
+
+  // button to unblock a mofo
+  & .blocked-user {
+    background-color: $grey;
+    border: 2px solid green;
+    color: white;
+    padding: 3vmin;
+    border-radius: 0.5vmin;
+    font-size: 3vmin;
+    margin: 1vmin;
   }
 }
