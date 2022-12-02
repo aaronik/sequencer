@@ -42,6 +42,11 @@ body {
   filter: brightness(15%);
 }
 
+// TODO remove
+#img.kofiimg {
+  filter: brightness(15%);
+}
+
 .button-effects {
   cursor: pointer;
   transition: filter 0.3s;

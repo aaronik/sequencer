@@ -15,6 +15,9 @@ import type Db from '@browser-network/database'
 import { buildNetworkAndDb } from './network'
 import { DbItem } from './types'
 import React from 'react'
+import KoFiWidget from './KoFiWidget'
+
+const IS_MOBILE_APP = window.location.search === "?mobile-app"
 
 const container = () => document.querySelector('.grid')!
 
@@ -107,6 +110,10 @@ const validateDbItem = (dbItem: DbItem): boolean => {
 
   return true
 }
+
+// TODO
+// * Remove github icon if this is an app
+// * Get folks to test it out
 
 // A note on play timing.
 // I tried:
@@ -323,7 +330,9 @@ function App() {
           }} />
         </div>
       </div>
-      <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>
+      {/* Not wanting to see the github at the moment, but leaving it in case this was a bad decision */}
+      {true || <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>}
+      {IS_MOBILE_APP || <KoFiWidget />}
     </React.Fragment>
   );
 }

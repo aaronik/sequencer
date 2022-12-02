@@ -20,3 +20,6 @@ in that key and mode.
 * Add notes here about how the classes work (assign only single class to top
     level thing rather than to every active item, use sass to create hecka css
     rules about it)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D6GRUPY)
+
