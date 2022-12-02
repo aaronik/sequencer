@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@browser-network/crypto": "^0.0.3",
-    "@browser-network/database": "^0.2.0",
+    "@browser-network/database": "^0.3.0",
     "@browser-network/network": "^0.3.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

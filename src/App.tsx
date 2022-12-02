@@ -237,15 +237,6 @@ function App() {
     setIsPlaying(!isPlaying)
   }
 
-  // TODO
-  // Leaving midway through a big thing, unfortunately.
-  // * Changed network switchboard handling (removing answer loop)
-  // * Updated DB with allow/deny
-  // * Added block feature here.
-  // * Issue is now I'm not seeing my FF window connect with my chrome window to test
-  // this new feature.
-  // * Gotta leave for lunch / metaculus interview thing.
-
   /**
   * @description Note that personId here is _not_ the db/network's address
   * space, it's the id we randomly assign within each person's state, ie
@@ -267,8 +258,8 @@ function App() {
     net.db!.set(ourDbItem!)
   }
 
-  const onAllowPerson = (address: string) => {
-    net.db?.allow(address)
+  const onUndenyPerson = (address: string) => {
+    net.db?.undeny(address)
     ourDbItem!.blocks = ourDbItem!.blocks.filter(block => {
       return block.address !== address
     })
@@ -300,7 +291,7 @@ function App() {
           tuning={tuning}
           setTuning={setTuning}
           blocks={ourDbItem?.blocks}
-          allow={onAllowPerson}
+          undeny={onUndenyPerson}
         />
         <SaveModal
           isOpen={isSaveModalOpen}

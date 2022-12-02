@@ -12,10 +12,10 @@ type SettingsModalProps = {
   tuning: keyof typeof TUNINGS
   setTuning: (tuning: keyof typeof TUNINGS) => void
   blocks?: DbItem['blocks']
-  allow: (address: string) => void
+  undeny: (address: string) => void
 }
 
-export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: tuningKey, setTuning, blocks, allow }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: tuningKey, setTuning, blocks, undeny }: SettingsModalProps) {
 
   const generateTuningSelectionStyle = (color: string) => {
     return { borderBottom: 'solid 1vmin ' + color }
@@ -68,7 +68,7 @@ export default function SettingsModal({ isOpen, close, tempo, setTempo, tuning: 
           <h3>Blocked <br/>Users</h3>
           {blocks.map(block => {
             return (
-              <button key={block.address} className="button-effects blocked-user" onClick={() => allow(block.address)}>
+              <button key={block.address} className="button-effects blocked-user" onClick={() => undeny(block.address)}>
                 {block.name}
               </button>
             )
