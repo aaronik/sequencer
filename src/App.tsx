@@ -263,6 +263,10 @@ function App() {
     })
     net.db!.deny(wrappedDbItem.publicKey)
     net.db!.set(ourDbItem!)
+
+    // This shouldn't be necessary, set should trigger this, however on my phone, it doesn't
+    // work without this..
+    updateDbItems()
   }
 
   const onUndenyPerson = (address: string) => {
