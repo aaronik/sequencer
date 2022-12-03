@@ -10,9 +10,7 @@ import { GRID_SIZE, TUNINGS } from './constants'
 function MiniGrid({ save }: { save: DbItem['saves'][number] }) {
 
   const squareMatrix: string[][] = []
-  // const whiteSquare = '&#9633;'
   const whiteSquare = '◻'
-  // const blackSquare = '&#9632;'
   const blackSquare = '◼'
 
   for (let i = 0; i < GRID_SIZE; i++) {
@@ -58,7 +56,7 @@ function Item({ item, loadSave, deleteSave, block, isOurs }: ItemProps) {
   return (
     <div className="db-item">
       <div className="name-group">
-        <h5 className="user-name">{item.name}</h5>
+        <h5 className="user-name">{item.name || 'anonymous'}</h5>
         {isOurs || <button className="button-effects block-button" onClick={() => block(item.id)}><h6>Block</h6></button>}
       </div>
       {item.saves.map(save => {
@@ -99,7 +97,6 @@ function SaveModalBody(props: SaveModalBodyProps) {
   const [isTuneSaveIndicatorShowing, setIsTuneSaveIndicatorShowing] = useState(false)
 
   const saveName = () => {
-    if (!personName) { return }
     props.ourDbItem.name = personName
     props.saveItem(props.ourDbItem)
 
@@ -141,10 +138,6 @@ function SaveModalBody(props: SaveModalBodyProps) {
   // We don't want to render any that have a name but don't have any saves
   dbItems = dbItems.filter(item => !!item.saves.length)
 
-  // And while we're at it, let's not render any for people that don't have a name,
-  // even they have saves.
-  dbItems = dbItems.filter(item => !!item.name)
-
   return (
     <div id="save-modal-body" onKeyDown={e => e.stopPropagation()}>
       <div className="row">
@@ -157,7 +150,7 @@ function SaveModalBody(props: SaveModalBodyProps) {
           defaultValue={props.ourDbItem.name}
           onChange={e => setPersonName(e.currentTarget.value)}
         />
-        <button className="button-effects" disabled={!personName} onClick={saveName}>Update</button>
+        <button className="button-effects" onClick={saveName}>Update</button>
       </div>
 
       <hr />
@@ -178,7 +171,8 @@ function SaveModalBody(props: SaveModalBodyProps) {
 
       <hr />
 
-      <h4>Load:</h4>
+      {!!dbItems.length || <h4><i>If you save while waiting for previously saved items to appear from the network, those will be overwritten.</i></h4>}
+      {!!dbItems.length && <h4>Load:</h4>}
 
       <div id="load-section">
         {dbItems.map(item => {

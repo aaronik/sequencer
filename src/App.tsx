@@ -145,7 +145,6 @@ function App() {
     updateDbItems()
     network.on('add-connection', updateConnections)
     network.on('destroy-connection', updateConnections)
-    db.onChange(updateDbItems)
   }
 
   useEffect(() => {
@@ -155,6 +154,13 @@ function App() {
       signIn(secret)
     }
   }, [secret])
+
+  // We need to do this every render in order for updateDbItems to see
+  // the state objects that appear to be lexically scoped above
+  useEffect(() => {
+    net.db?.onChange(updateDbItems)
+    return () => net.db?.removeChangeHandlers()
+  })
 
   const signOut = () => {
     setNetworkSecretLocally("")
@@ -218,19 +224,45 @@ function App() {
   }, [tempo, tuning])
 
   const updateConnections = () => setNumConnections(net.network?.activeConnections.length || 0)
+
   const updateDbItems = () => {
     if (!net.db) return
     let items = net.db.getAll().map(i => i.state)
+    console.log('updateDbItems, items:', items)
     items = items.filter(validateDbItem)
     setDbItems(items)
+
+    // This is our state
     const ours = net.db.get(net.db.publicKey)?.state
-    if (ours && validateDbItem(ours)) {
-      setOurDbItem(ours)
-      // It's not really optional but there's already state in the network without these!
-      ours.blocks?.forEach(block => {
-        net.db!.deny(block.address)
+    if (!ours || !validateDbItem(ours)) { return }
+
+    // Now we handle what happens when an item comes in that's ours
+
+    // In the case of someone having logged in with an existing account with
+    // a new device, and they already added a name, say, or even some saves, we
+    // need to make sure we don't overwrite their old saves, so we'll merge them.
+    //
+    // Note that this is only going to work some of the time, because if our state
+    // gets out to the other guy first, they'll overwrite their version of ours before
+    // they have a chance to send it over. This has been "solved" with a user message.
+    if (ourDbItem && ours.id !== ourDbItem?.id) {
+      ourDbItem.saves.push(...ours.saves)
+      const allSaves = ourDbItem.saves.concat(ours.saves)
+      const seenSaves: { [id: string]: true } = {}
+      // Unique them
+      ourDbItem.saves = allSaves.filter(save => {
+        const hasSeen = seenSaves[save.id]
+        seenSaves[save.id] = true
+        return !hasSeen
       })
     }
+
+    setOurDbItem(ours)
+
+    // It's not really optional but there's already state in the network without these!
+    ours.blocks?.forEach(block => {
+      net.db!.deny(block.address)
+    })
   }
 
   const stopPlay = (shouldResetColumn = true) => {
@@ -256,18 +288,21 @@ function App() {
     const wrappedDbItem = net.db!.getAll().find(wrapped => wrapped.state.id === address)
     if (!wrappedDbItem) { return console.warn('Tried to block person we couldn\'t find') }
 
-    // We have to handle this because the network is already populated with state without
-    if (ourDbItem && !ourDbItem?.blocks) ourDbItem.blocks = []
-    ourDbItem!.blocks.push({
+    let ourNewItem: DbItem
+    if (!ourDbItem) {
+      ourNewItem = { ...DEFAULT_DB_ITEM }
+    } else {
+      ourNewItem = ourDbItem
+    }
+
+    // We have to handle this because the network is already populated with state without blocks
+    if (!ourNewItem.blocks) ourNewItem.blocks = []
+    ourNewItem.blocks.push({
       name: item.name,
       address: wrappedDbItem.publicKey
     })
     net.db!.deny(wrappedDbItem.publicKey)
-    net.db!.set(ourDbItem!)
-
-    // This shouldn't be necessary, set should trigger this, however on my phone, it doesn't
-    // work without this..
-    updateDbItems()
+    net.db!.set(ourNewItem)
   }
 
   const onUndenyPerson = (address: string) => {
