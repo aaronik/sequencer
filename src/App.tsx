@@ -16,6 +16,7 @@ import { buildNetworkAndDb } from './network'
 import { DbItem } from './types'
 import React from 'react'
 import KoFiWidget from './KoFiWidget'
+import Copyright from './Copyright'
 
 const IS_MOBILE_APP = window.location.search === "?mobile-app"
 
@@ -337,6 +338,7 @@ function App() {
       {/* Not wanting to see the github at the moment, but leaving it in case this was a bad decision */}
       {true || <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>}
       {IS_MOBILE_APP || <KoFiWidget />}
+      <Copyright />
     </React.Fragment>
   );
 }
