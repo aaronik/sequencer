@@ -59,7 +59,7 @@ function Item({ item, loadSave, deleteSave, block, isOurs }: ItemProps) {
     <div className="db-item">
       <div className="name-group">
         <h5 className="user-name">{item.name}</h5>
-        {isOurs || <h6 className="button-effects block-button" onClick={() => block(item.id)}>Block</h6>}
+        {isOurs || <button className="button-effects block-button" onClick={() => block(item.id)}><h6>Block</h6></button>}
       </div>
       {item.saves.map(save => {
         return (
