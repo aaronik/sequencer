@@ -53,12 +53,13 @@
     height: 100%;
     display: flex;
     align-items: center;
-    padding: 1vmin 3vmin;
+    padding: 1em;
     background-color: $dark-grey;
     color: white;
-    width: 2rem;
+    width: 3rem;
     margin-right: 3vmin;
     height: auto;
+    text-align: center;
   }
 
   & .tap-tempo-button {
@@ -75,9 +76,23 @@
     }
   }
 
+  & .tempo-update-check {
+    color: green;
+    font-size: 4vmin;
+    border: 1px solid green;
+    border-radius: 100%;
+    width: 4vmin;
+    height: 4vmin;
+    margin-left: 3vmin;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+
   & .tuning-selection {
     border-radius: 0.5vmin;
-    padding: 2vmin;
+    padding: 1em;
     margin-right: 2vmin;
     margin-bottom: 2vmin;
     height: 7vmin;
@@ -92,20 +107,6 @@
     &.active {
       border: 1px solid white;
     }
-  }
-
-  & .tempo-update-check {
-    color: green;
-    font-size: 4vmin;
-    border: 1px solid green;
-    border-radius: 100%;
-    width: 4vmin;
-    height: 4vmin;
-    margin-left: 3vmin;
-    transition: opacity 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
   }
 
   & #clear-grid-button {
