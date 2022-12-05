@@ -17,6 +17,7 @@ import { DbItem } from './types'
 import React from 'react'
 import KoFiWidget from './KoFiWidget'
 import Copyright from './Copyright'
+import { v4 as uuid } from 'uuid'
 
 const IS_MOBILE_APP = window.location.search === "?mobile-app"
 
@@ -84,7 +85,7 @@ const getLocallyStoredNetworkSecret = () => localStorage?.getItem('browser-netwo
 const setNetworkSecretLocally = (secret: string) => localStorage?.setItem('browser-network-secret', secret)
 
 const DEFAULT_DB_ITEM: DbItem = {
-  id: window.crypto.randomUUID(),
+  id: uuid(),
   name: "",
   saves: [],
   blocks: []
@@ -178,7 +179,7 @@ function App() {
 
   const serializeState = (): DbItem['saves'][number] => {
     return {
-      id: window.crypto.randomUUID(),
+      id: uuid(),
       name: "",
       tuning: tuning,
       tempo: tempo,
