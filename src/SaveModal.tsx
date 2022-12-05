@@ -46,17 +46,19 @@ type ItemProps = {
   item: DbItem,
   loadSave: (save: DbItem['saves'][number]) => void
   deleteSave?: (saveId: string) => void
+  onUpdateNameClick: () => void
   block: (personId: string) => void
   isOurs: boolean
 }
 
 // One row -- a single person, with many saves
-function Item({ item, loadSave, deleteSave, block, isOurs }: ItemProps) {
+function Item({ item, loadSave, deleteSave, block, isOurs, onUpdateNameClick }: ItemProps) {
 
   return (
     <div className="db-item">
       <div className="name-group">
         <h5 className="user-name">{item.name || 'anonymous'}</h5>
+        {isOurs && <button className="button-effects update-name-button" onClick={onUpdateNameClick}><h6>Update Name</h6></button>}
         {isOurs || <button className="button-effects block-button" onClick={() => block(item.id)}><h6>Block</h6></button>}
       </div>
       {item.saves.map(save => {
@@ -91,20 +93,21 @@ type SaveModalBodyProps = {
 //   Show loading if there're no connections AND there're no saves.
 function SaveModalBody(props: SaveModalBodyProps) {
   const tuneNameRef = useRef<HTMLInputElement>(null)
-  const [personName, setPersonName] = useState("")
+  const [personName, setPersonName] = useState(props.ourDbItem.name)
   const [tuneName, setTuneName] = useState("")
-  const [isNameSaveIndicatorShowing, setIsNameSaveIndicatorShowing] = useState(false)
   const [isTuneSaveIndicatorShowing, setIsTuneSaveIndicatorShowing] = useState(false)
+  const [isUpdateNameVisible, setIsUpdateNameVisible] = useState(false)
 
   const saveName = () => {
     props.ourDbItem.name = personName
     props.saveItem(props.ourDbItem)
-
-    setIsNameSaveIndicatorShowing(true)
-    setTimeout(() => {
-      setIsNameSaveIndicatorShowing(false)
-    }, 3000)
+    setIsUpdateNameVisible(false)
   }
+
+  // The first props.ourDbItem.name will be blank so this helps us to keep it right
+  useEffect(() => {
+    setPersonName(props.ourDbItem.name)
+  }, [props.ourDbItem.name])
 
   const serializeAndSaveItem = () => {
     if (!props.ourDbItem) return // TODO on these returns make a red check
@@ -140,20 +143,22 @@ function SaveModalBody(props: SaveModalBodyProps) {
 
   return (
     <div id="save-modal-body" onKeyDown={e => e.stopPropagation()}>
-      <div className="row">
-        <h4>Saving under the name:</h4>
-        <span style={{ transition: 'opacity: 0.3s', color: 'green' }} className={isNameSaveIndicatorShowing ? "" : "hidden"}>&nbsp;✔</span>
-      </div>
-      <div className="input-group">
-        <input
-          placeholder="Your name"
-          defaultValue={props.ourDbItem.name}
-          onChange={e => setPersonName(e.currentTarget.value)}
-        />
-        <button className="button-effects" onClick={saveName}>Update</button>
+
+      <div className={"input-name" + (isUpdateNameVisible ? " visible" : "")}>
+        <div className="row">
+          <h4>Saving under the name:</h4>
+        </div>
+        <div className="input-group">
+          <input
+            placeholder="Your name"
+            defaultValue={props.ourDbItem.name}
+            onChange={e => setPersonName(e.currentTarget.value)}
+          />
+          <button className="button-effects" onClick={saveName}>Update</button>
+        </div>
+        <hr />
       </div>
 
-      <hr />
 
       <div className="row">
         <h4>Save the current tune as:</h4>
@@ -182,6 +187,7 @@ function SaveModalBody(props: SaveModalBodyProps) {
               item={item}
               loadSave={props.loadSave}
               deleteSave={item.id === props.ourDbItem.id ? deleteSave : undefined}
+              onUpdateNameClick={() => setIsUpdateNameVisible(!isUpdateNameVisible)}
               block={props.block}
               isOurs={item.id === props.ourDbItem.id}
             />

@@ -229,7 +229,6 @@ function App() {
   const updateDbItems = () => {
     if (!net.db) return
     let items = net.db.getAll().map(i => i.state)
-    console.log('updateDbItems, items:', items)
     items = items.filter(validateDbItem)
     setDbItems(items)
 

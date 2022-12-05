@@ -92,6 +92,17 @@
     }
   }
 
+  .input-name {
+    transition: max-height 0.3s ease-out;
+    max-height: 0;
+    overflow: hidden;
+
+    &.visible {
+      max-height: 10em;
+      transition: max-height 0.3s ease-in;
+    }
+  }
+
   .db-item {
     display: flex;
     flex-direction: row;
@@ -111,6 +122,17 @@
       min-width: 7em;
       width: 7em; // both this and above are necessary for word-break and size
       word-break: break-all;
+    }
+
+    & .update-name-button {
+      padding: 1em;
+      padding-left: 0;
+      background: $dark-grey;
+      border-radius: 0.3em;
+      color: darkgreen;
+      width: max-content;
+      user-select: none;
+      border: none;
     }
 
     & .block-button {
