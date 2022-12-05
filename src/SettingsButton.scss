@@ -10,5 +10,11 @@
   border: none;
   color: $lightest-grey;
   margin: 1px;
+
+  & img {
+    width: 5vmin;
+    filter: contrast(0);
+  }
 }
+
 
