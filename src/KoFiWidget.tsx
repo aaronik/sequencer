@@ -11,7 +11,7 @@ export default function KoFiWidget({ }: KoFiWidgetProps) {
     // @ts-ignore
     window.kofiWidgetOverlay?.draw('aaron_creates', {
       'type': 'floating-chat',
-      'floating-chat.donateButton.text': 'Support me!',
+      'floating-chat.donateButton.text': 'Buy me a coffee',
       'floating-chat.donateButton.background-color': '#181818',
       'floating-chat.donateButton.text-color': '#AAA',
       'floating-chat.core.position.bottom-left': 'position: fixed; bottom: 50px; left: 10px; width: 160px; height: 65px;',
@@ -21,6 +21,15 @@ export default function KoFiWidget({ }: KoFiWidgetProps) {
 
   return (
     <React.Fragment>
+      <style>
+        {
+          `
+            iframe {
+              width: initial !important;
+            }
+          `
+        }
+      </style>
     </React.Fragment>
   )
 }

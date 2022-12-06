@@ -372,7 +372,7 @@ function App() {
       </div>
       {/* Not wanting to see the github at the moment, but leaving it in case this was a bad decision */}
       {true || <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>}
-      {IS_MOBILE_APP || <KoFiWidget />}
+      {!IS_MOBILE_APP && <KoFiWidget />}
       <Copyright />
     </React.Fragment>
   );
