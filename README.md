@@ -1,5 +1,8 @@
 # Sequencer
 
+![image](https://user-images.githubusercontent.com/1324601/205813161-0a63bdd1-6683-4fc2-a60f-ac8a5ef53cd5.png)
+
+
 This is my fourth (I believe?) attempt at a musical sequencer.
 The original was called tone lotus, and I can't find where that may live. I think it was a rails app.
 The second was called Music To Us, and I also can't find that one, which is probably a node app.
