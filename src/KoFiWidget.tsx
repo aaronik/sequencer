@@ -7,6 +7,8 @@ type KoFiWidgetProps = {
 export default function KoFiWidget({ }: KoFiWidgetProps) {
 
   // I acknowledge that this is weird but I'm kind of rushing and it works just fine.
+  // TODO What should really be done here is to grab an image and then put my own animation
+  // into their supplied little window thing.
   useEffect(() => {
     // @ts-ignore
     window.kofiWidgetOverlay?.draw('aaron_creates', {
@@ -26,6 +28,7 @@ export default function KoFiWidget({ }: KoFiWidgetProps) {
           `
             iframe {
               width: initial !important;
+              opacity: 0.7;
             }
           `
         }
