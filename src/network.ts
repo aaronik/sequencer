@@ -17,7 +17,7 @@ export const validateSecret = (secret: string) => {
 export const buildNetworkAndDb = (secret: string): [Network, Db<DbItem>] => {
   const network = new Net({
     secret: secret,
-    networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3' + window.location.href,
+    networkId: 'aaroniks-sequencer-iauyria8y23oirahlaiu3' + window.location.host,
     switchAddress: 'https://switchboard.aaronik.com',
     // switchAddress: 'http://localhost:5678',
     config: {
