@@ -156,6 +156,7 @@ function App() {
     }
   }, [secret])
 
+
   // We need to do this every render in order for updateDbItems to see
   // the state objects that appear to be lexically scoped above
   useEffect(() => {
@@ -328,7 +329,7 @@ function App() {
   })
 
   return (
-    <React.Fragment>
+    <>
       <div className="container">
         <SettingsModal
           isOpen={isSettingsModalOpen}
@@ -374,7 +375,7 @@ function App() {
       {true || <a id="github" target="_blank" href="https://github.com/aaronik/sequencer"><img src="github.png" /></a>}
       {!IS_MOBILE_APP && <KoFiWidget />}
       <Copyright />
-    </React.Fragment>
+    </>
   );
 }
 
