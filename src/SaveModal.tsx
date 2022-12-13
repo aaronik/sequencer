@@ -176,7 +176,10 @@ function SaveModalBody(props: SaveModalBodyProps) {
 
       <hr />
 
-      {!!dbItems.length || <h4><i>If you save while waiting for previously saved items to appear from the network, those will be overwritten.</i></h4>}
+      {!!dbItems.length || <h4><i>
+        If you save while waiting for your previously saved items to appear from the network, those will be overwritten.
+        If you are on another device and are waiting for your previous saves, wait a little longer :)
+      </i></h4>}
       {!!dbItems.length && <h4>Load:</h4>}
 
       <div id="load-section">
