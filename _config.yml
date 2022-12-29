@@ -1,0 +1,3 @@
+# As per https://github.com/tschaub/gh-pages/issues/381, need this to have the
+# .well-known, which is required for publishing a PWA to the android app store.
+include: [".well-known"]
