@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "com.aaronik.sequencer.twa",
+                     "sha256_cert_fingerprints": ["03:01:29:9D:E6:CC:50:F5:66:4A:50:E4:A0:E1:98:83:3A:56:62:F1:F3:6E:EC:A0:93:18:62:98:4F:E3:A6:18"] }
+      }
+]
